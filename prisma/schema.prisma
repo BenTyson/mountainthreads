@@ -27,6 +27,15 @@ model Group {
   slug        String   @unique // URL-friendly name (e.g., "thetysonfamily")
   name        String   // Display name (e.g., "Tyson Family")
 
+  // Group Leader (primary contact)
+  leaderName  String?
+  leaderEmail String?
+
+  // Rental details (set by leader when they submit)
+  rentalStartDate DateTime?
+  rentalEndDate   DateTime?
+  skiResort       String?
+
   // Status tracking
   paid        Boolean  @default(false)
   pickedUp    Boolean  @default(false)
@@ -36,7 +45,7 @@ model Group {
   // Admin notes
   notes       String?  @db.Text
 
-  // Email list for invitations (stored as JSON array)
+  // Email list for member invitations (stored as JSON array)
   emails      String[] @default([])
 
   // Timestamps
@@ -60,6 +69,7 @@ model FormSubmission {
 
   // Submitter info
   email     String?
+  isLeader  Boolean  @default(false)
 
   // Form data stored as flexible JSON
   // This allows for nested fields, family members, etc.

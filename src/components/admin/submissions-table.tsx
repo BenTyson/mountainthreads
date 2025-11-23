@@ -24,6 +24,7 @@ import { Eye, TableIcon, LayoutGrid } from "lucide-react";
 interface Submission {
   id: string;
   email: string | null;
+  isLeader: boolean;
   data: unknown;
   createdAt: Date;
 }
@@ -32,65 +33,158 @@ interface SubmissionsTableProps {
   submissions: Submission[];
 }
 
+// Human-readable labels for form fields
+const fieldLabels: Record<string, string> = {
+  firstName: "First Name",
+  lastName: "Last Name",
+  email: "Email",
+  phone: "Phone",
+  clothingType: "Clothing Type",
+  youthGender: "Gender",
+  shoeSize: "Shoe Size",
+  jacketSize: "Jacket Size",
+  pantSize: "Pant Size",
+  bibSize: "Bib Size",
+  gloveSize: "Glove Size",
+  goggles: "Goggles",
+  helmetSize: "Helmet Size",
+  sizingNotes: "Sizing Notes",
+  paymentMethod: "Payment Method",
+  rentalStartDate: "Rental Start Date",
+  rentalEndDate: "Rental End Date",
+  skiResort: "Ski Resort",
+};
+
+// Field display order
+const fieldOrder = [
+  "firstName",
+  "lastName",
+  "email",
+  "phone",
+  "rentalStartDate",
+  "rentalEndDate",
+  "skiResort",
+  "clothingType",
+  "youthGender",
+  "shoeSize",
+  "jacketSize",
+  "pantSize",
+  "bibSize",
+  "gloveSize",
+  "goggles",
+  "helmetSize",
+  "sizingNotes",
+  "paymentMethod",
+];
+
 function SubmissionDetail({ submission }: { submission: Submission }) {
   const data = submission.data as Record<string, unknown>;
 
-  const renderValue = (value: unknown): React.ReactNode => {
-    if (value === null || value === undefined) return "-";
+  const formatValue = (key: string, value: unknown): string => {
+    if (value === null || value === undefined || value === "") return "—";
     if (typeof value === "boolean") return value ? "Yes" : "No";
-    if (Array.isArray(value)) {
-      return (
-        <div className="space-y-2">
-          {value.map((item, i) => (
-            <Card key={i} className="bg-muted/50">
-              <CardContent className="p-3">
-                {typeof item === "object" ? (
-                  <div className="grid gap-1">
-                    {Object.entries(item as Record<string, unknown>).map(([k, v]) => (
-                      <div key={k} className="flex justify-between text-sm">
-                        <span className="text-muted-foreground capitalize">
-                          {k.replace(/([A-Z])/g, " $1").trim()}:
-                        </span>
-                        <span>{renderValue(v)}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  String(item)
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      );
+    // Format clothing type
+    if (key === "clothingType") {
+      const types: Record<string, string> = {
+        mens: "Men's",
+        womens: "Women's",
+        youth: "Youth",
+        toddler: "Toddler",
+      };
+      return types[value as string] || String(value);
     }
-    if (typeof value === "object") {
-      return (
-        <div className="grid gap-1">
-          {Object.entries(value as Record<string, unknown>).map(([k, v]) => (
-            <div key={k} className="flex justify-between text-sm">
-              <span className="text-muted-foreground capitalize">
-                {k.replace(/([A-Z])/g, " $1").trim()}:
-              </span>
-              <span>{renderValue(v)}</span>
-            </div>
-          ))}
-        </div>
-      );
+    // Format youth gender
+    if (key === "youthGender") {
+      const genders: Record<string, string> = {
+        boys: "Boys",
+        girls: "Girls",
+      };
+      return genders[value as string] || String(value);
+    }
+    // Format goggles
+    if (key === "goggles") {
+      const options: Record<string, string> = {
+        standard: "Standard",
+        "over-glasses": "Over Glasses",
+      };
+      return options[value as string] || String(value);
+    }
+    // Format payment method
+    if (key === "paymentMethod") {
+      const options: Record<string, string> = {
+        individually: "Individually",
+        family: "For my family members",
+        "entire-group": "Entire Group",
+        "someone-else": "Someone Else is Paying for me",
+      };
+      return options[value as string] || String(value);
     }
     return String(value);
   };
 
-  return (
-    <div className="space-y-4">
-      {Object.entries(data).map(([key, value]) => (
-        <div key={key}>
-          <h4 className="font-medium capitalize mb-1">
-            {key.replace(/([A-Z])/g, " $1").trim()}
-          </h4>
-          <div className="text-sm">{renderValue(value)}</div>
+  // Sort entries by field order
+  const sortedEntries = Object.entries(data).sort((a, b) => {
+    const indexA = fieldOrder.indexOf(a[0]);
+    const indexB = fieldOrder.indexOf(b[0]);
+    if (indexA === -1 && indexB === -1) return 0;
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    return indexA - indexB;
+  });
+
+  // Group fields into sections
+  const personalFields = ["firstName", "lastName", "email", "phone"];
+  const rentalFields = ["rentalStartDate", "rentalEndDate", "skiResort"];
+  const sizingFields = [
+    "clothingType",
+    "youthGender",
+    "shoeSize",
+    "jacketSize",
+    "pantSize",
+    "bibSize",
+    "gloveSize",
+    "goggles",
+    "helmetSize",
+    "sizingNotes",
+  ];
+  const paymentFields = ["paymentMethod"];
+
+  const renderSection = (title: string, fields: string[]) => {
+    const sectionEntries = sortedEntries.filter(([key]) => fields.includes(key));
+    if (sectionEntries.length === 0) return null;
+
+    return (
+      <div className="space-y-2">
+        <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+          {title}
+        </h4>
+        <div className="grid gap-2">
+          {sectionEntries.map(([key, value]) => {
+            const displayValue = formatValue(key, value);
+            if (displayValue === "—") return null;
+            return (
+              <div key={key} className="flex justify-between text-sm">
+                <span className="text-muted-foreground">
+                  {fieldLabels[key] || key.replace(/([A-Z])/g, " $1").trim()}
+                </span>
+                <span className="font-medium">{displayValue}</span>
+              </div>
+            );
+          })}
         </div>
-      ))}
+      </div>
+    );
+  };
+
+  return (
+    <div className="space-y-6">
+      {submission.isLeader && (
+        <Badge className="bg-primary">Group Leader</Badge>
+      )}
+      {renderSection("Personal Information", personalFields)}
+      {renderSection("Rental Details", rentalFields)}
+      {renderSection("Sizing Information", sizingFields)}
+      {renderSection("Payment", paymentFields)}
     </div>
   );
 }
@@ -106,7 +200,12 @@ function SubmissionCard({ submission, onView }: { submission: Submission; onView
       <CardContent className="p-4">
         <div className="flex justify-between items-start">
           <div>
-            <h4 className="font-medium">{name}</h4>
+            <div className="flex items-center gap-2">
+              <h4 className="font-medium">{name}</h4>
+              {submission.isLeader && (
+                <Badge className="bg-primary text-xs">Leader</Badge>
+              )}
+            </div>
             {submission.email && (
               <p className="text-sm text-muted-foreground">{submission.email}</p>
             )}
@@ -167,7 +266,14 @@ export function SubmissionsTable({ submissions }: SubmissionsTableProps) {
                     : "—";
                   return (
                     <TableRow key={submission.id}>
-                      <TableCell className="font-medium">{name}</TableCell>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2">
+                          {name}
+                          {submission.isLeader && (
+                            <Badge className="bg-primary text-xs">Leader</Badge>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell>{submission.email || "—"}</TableCell>
                       <TableCell>
                         {new Date(submission.createdAt).toLocaleDateString()}

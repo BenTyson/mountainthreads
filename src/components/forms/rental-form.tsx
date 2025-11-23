@@ -1,44 +1,34 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Plus } from "lucide-react";
+import { MemberFields, MemberData, emptyMemberData } from "./member-fields";
 
 interface RentalFormProps {
   groupId: string;
 }
 
 export function RentalForm({ groupId }: RentalFormProps) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [members, setMembers] = useState<MemberData[]>([{ ...emptyMemberData }]);
 
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    experience: "",
-    shoeSize: "",
-    height: "",
-    weight: "",
-    notes: "",
-  });
+  const updateMember = (index: number, data: MemberData) => {
+    const newMembers = [...members];
+    newMembers[index] = data;
+    setMembers(newMembers);
+  };
 
-  const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const addMember = () => {
+    setMembers([...members, { ...emptyMemberData }]);
+  };
+
+  const removeMember = (index: number) => {
+    if (members.length > 1) {
+      setMembers(members.filter((_, i) => i !== index));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,18 +37,22 @@ export function RentalForm({ groupId }: RentalFormProps) {
     setError("");
 
     try {
-      const response = await fetch("/api/submissions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          groupId,
-          email: formData.email,
-          data: formData,
-        }),
-      });
+      // Submit each member as a separate submission
+      for (const member of members) {
+        const response = await fetch("/api/submissions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            groupId,
+            email: member.email,
+            isLeader: false,
+            data: member,
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error("Failed to submit form");
+        if (!response.ok) {
+          throw new Error("Failed to submit form");
+        }
       }
 
       setSubmitted(true);
@@ -87,135 +81,37 @@ export function RentalForm({ groupId }: RentalFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Personal Info */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
-          Personal Information
-        </h3>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="firstName">First Name *</Label>
-            <Input
-              id="firstName"
-              value={formData.firstName}
-              onChange={(e) => handleChange("firstName", e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="lastName">Last Name *</Label>
-            <Input
-              id="lastName"
-              value={formData.lastName}
-              onChange={(e) => handleChange("lastName", e.target.value)}
-              required
-            />
-          </div>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => handleChange("email", e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <Input
-              id="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={(e) => handleChange("phone", e.target.value)}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Rental Details */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
-          Rental Details
-        </h3>
-
-        <div className="space-y-2">
-          <Label htmlFor="experience">Experience Level *</Label>
-          <Select
-            value={formData.experience}
-            onValueChange={(value) => handleChange("experience", value)}
-            required
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select your experience level" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="beginner">Beginner - First time or learning</SelectItem>
-              <SelectItem value="intermediate">Intermediate - Comfortable on most runs</SelectItem>
-              <SelectItem value="advanced">Advanced - Confident on all terrain</SelectItem>
-              <SelectItem value="expert">Expert - Professional level</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="space-y-2">
-            <Label htmlFor="shoeSize">Shoe Size *</Label>
-            <Input
-              id="shoeSize"
-              placeholder="e.g., 10"
-              value={formData.shoeSize}
-              onChange={(e) => handleChange("shoeSize", e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="height">Height</Label>
-            <Input
-              id="height"
-              placeholder="e.g., 5'10&quot;"
-              value={formData.height}
-              onChange={(e) => handleChange("height", e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="weight">Weight (lbs)</Label>
-            <Input
-              id="weight"
-              placeholder="e.g., 175"
-              value={formData.weight}
-              onChange={(e) => handleChange("weight", e.target.value)}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Notes */}
-      <div className="space-y-2">
-        <Label htmlFor="notes">Additional Notes</Label>
-        <Textarea
-          id="notes"
-          placeholder="Any special requests or additional information..."
-          value={formData.notes}
-          onChange={(e) => handleChange("notes", e.target.value)}
-          rows={3}
+      {members.map((member, index) => (
+        <MemberFields
+          key={index}
+          data={member}
+          onChange={(data) => updateMember(index, data)}
+          onRemove={() => removeMember(index)}
+          showRemove={members.length > 1}
+          title={members.length > 1 ? `Person ${index + 1}` : undefined}
         />
-      </div>
+      ))}
+
+      <Button
+        type="button"
+        variant="outline"
+        onClick={addMember}
+        className="w-full"
+      >
+        <Plus className="mr-2 h-4 w-4" />
+        Add Another Person
+      </Button>
 
       {error && (
-        <p className="text-sm text-destructive">{error}</p>
+        <p className="text-sm text-destructive text-center">{error}</p>
       )}
 
       <Button type="submit" className="w-full" size="lg" disabled={loading}>
-        {loading ? "Submitting..." : "Submit Rental Form"}
+        {loading ? "Submitting..." : `Submit ${members.length > 1 ? `${members.length} Forms` : "Form"}`}
       </Button>
 
       <p className="text-xs text-center text-muted-foreground">
-        By submitting this form, you agree to Mountain Threads' rental terms and conditions.
+        By submitting this form, you agree to Mountain Threads&apos; rental terms and conditions.
       </p>
     </form>
   );

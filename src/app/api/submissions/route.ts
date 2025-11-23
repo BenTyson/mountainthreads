@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 
+interface SubmissionData {
+  rentalStartDate?: string;
+  rentalEndDate?: string;
+  skiResort?: string;
+  [key: string]: unknown;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { groupId, email, data } = body;
+    const { groupId, email, isLeader = false, data } = body;
 
     if (!groupId || !data) {
       return NextResponse.json(
@@ -33,10 +40,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // If this is a leader submission, update group's rental details
+    if (isLeader) {
+      const submissionData = data as SubmissionData;
+      await prisma.group.update({
+        where: { id: groupId },
+        data: {
+          rentalStartDate: submissionData.rentalStartDate
+            ? new Date(submissionData.rentalStartDate)
+            : undefined,
+          rentalEndDate: submissionData.rentalEndDate
+            ? new Date(submissionData.rentalEndDate)
+            : undefined,
+          skiResort: submissionData.skiResort || undefined,
+        },
+      });
+    }
+
     const submission = await prisma.formSubmission.create({
       data: {
         groupId,
         email: email || null,
+        isLeader,
         data,
       },
     });

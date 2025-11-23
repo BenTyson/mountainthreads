@@ -1,6 +1,6 @@
 # Current Project Status
 
-> Last updated: Session 001 (Nov 22, 2025)
+> Last updated: Session 002 (Nov 22, 2025)
 
 ## Completed Phases
 
@@ -24,21 +24,29 @@
 - Groups list (table view)
 - Group detail page (submissions, status toggles, notes)
 - Archived groups section
-- Create group modal
+- Create group modal with leader name/email
 
-### Phase 5A: Test Form ✅
-- Public form at `/group/[slug]`
-- Mobile-responsive
-- Submits to database
-- Success confirmation
+### Phase 5: Form System ✅
+- **Leader Form** at `/group/[slug]/leader`
+  - Rental details (start date, end date, ski resort)
+  - Leader's personal sizing info
+  - Add Family Members functionality
+- **Member Form** at `/group/[slug]`
+  - Personal info + full sizing fields
+  - Add Another Person functionality
+- Conditional sizing based on clothing type:
+  - Men's/Women's: Pants
+  - Youth/Toddler: Bibs
+  - Youth: Gender selection (Boys/Girls) for sizing labels
+- Sizing labels on all dropdowns (e.g., "Men's Sizes", "Youth Boys Sizes")
+- Submissions display with Leader badge and organized sections
 
 ## What's Next
 
-1. **Phase 5B: Full Form** - Waiting on client to provide detailed form specs
-2. **Phase 6: Polish** - Search/filter, performance
-3. **Phase 7: Testing** - Unit, integration, E2E
-4. **Initial git commit** - Save progress
-5. **Logo assets** - Client will provide
+1. **Phase 6: Polish** - Search/filter, performance audit
+2. **Phase 7: Testing** - Unit, integration, E2E
+3. **Phase 8: Deployment** - Railway setup, domain config
+4. **Logo assets** - Client will provide
 
 ## Quick Commands
 
@@ -51,6 +59,19 @@ npm run build      # Production build
 
 ## Test URLs
 
-- http://localhost:3333 → redirects to login
-- http://localhost:3333/group/tyson-family → public form
-- http://localhost:3333/group/smith-group → public form
+- Admin: http://localhost:3333/dashboard
+- Leader Form: http://localhost:3333/group/tyson-family/leader
+- Member Form: http://localhost:3333/group/tyson-family
+
+## Form Fields
+
+| Field | Men's | Women's | Youth | Toddler |
+|-------|-------|---------|-------|---------|
+| Gender | - | - | ✅ | - |
+| Shoe Size | ✅ | ✅ | ✅ | ✅ |
+| Jacket Size | ✅ | ✅ | ✅ | ✅ |
+| Pant Size | ✅ | ✅ | - | - |
+| Bib Size | - | - | ✅ | ✅ |
+| Glove Size | ✅ | ✅ | ✅ | ✅ |
+| Goggles | ✅ | ✅ | ✅ | ✅ |
+| Helmet Size | ✅ | ✅ | ✅ | ✅ |

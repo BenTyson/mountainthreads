@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Copy, ExternalLink } from "lucide-react";
 import prisma from "@/lib/db";
 import Link from "next/link";
 import { CreateGroupButton } from "@/components/admin/create-group-button";

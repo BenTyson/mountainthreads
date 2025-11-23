@@ -21,6 +21,8 @@ export function CreateGroupButton() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
+  const [leaderName, setLeaderName] = useState("");
+  const [leaderEmail, setLeaderEmail] = useState("");
   const [emails, setEmails] = useState("");
   const router = useRouter();
 
@@ -34,6 +36,8 @@ export function CreateGroupButton() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
+          leaderName,
+          leaderEmail,
           emails: emails
             .split(/[,\n]/)
             .map((e) => e.trim())
@@ -45,6 +49,8 @@ export function CreateGroupButton() {
         const group = await response.json();
         setOpen(false);
         setName("");
+        setLeaderName("");
+        setLeaderEmail("");
         setEmails("");
         router.refresh();
         router.push(`/groups/${group.id}`);
@@ -64,17 +70,17 @@ export function CreateGroupButton() {
           New Group
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Create New Group</DialogTitle>
             <DialogDescription>
-              Create a rental group and invite members to fill out the form.
+              Create a rental group with a leader and invite members.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Group Name</Label>
+              <Label htmlFor="name">Group Name *</Label>
               <Input
                 id="name"
                 placeholder="e.g., Tyson Family"
@@ -83,25 +89,55 @@ export function CreateGroupButton() {
                 required
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="emails">Email Addresses (optional)</Label>
-              <Textarea
-                id="emails"
-                placeholder="Enter email addresses, one per line or comma-separated"
-                value={emails}
-                onChange={(e) => setEmails(e.target.value)}
-                rows={3}
-              />
-              <p className="text-xs text-muted-foreground">
-                You can add more emails later. Members will receive the form link.
-              </p>
+
+            <div className="border-t pt-4">
+              <p className="text-sm font-medium mb-3">Group Leader (Primary Contact)</p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-2">
+                  <Label htmlFor="leaderName">Leader Name *</Label>
+                  <Input
+                    id="leaderName"
+                    placeholder="John Tyson"
+                    value={leaderName}
+                    onChange={(e) => setLeaderName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="leaderEmail">Leader Email *</Label>
+                  <Input
+                    id="leaderEmail"
+                    type="email"
+                    placeholder="john@example.com"
+                    value={leaderEmail}
+                    onChange={(e) => setLeaderEmail(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t pt-4">
+              <div className="grid gap-2">
+                <Label htmlFor="emails">Other Member Emails (optional)</Label>
+                <Textarea
+                  id="emails"
+                  placeholder="Enter email addresses, one per line or comma-separated"
+                  value={emails}
+                  onChange={(e) => setEmails(e.target.value)}
+                  rows={3}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Additional group members. You can add more later.
+                </p>
+              </div>
             </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading || !name}>
+            <Button type="submit" disabled={loading || !name || !leaderName || !leaderEmail}>
               {loading ? "Creating..." : "Create Group"}
             </Button>
           </DialogFooter>

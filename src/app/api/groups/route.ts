@@ -32,11 +32,11 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, emails = [] } = body;
+    const { name, leaderName, leaderEmail, emails = [] } = body;
 
-    if (!name) {
+    if (!name || !leaderName || !leaderEmail) {
       return NextResponse.json(
-        { error: "Name is required" },
+        { error: "Name, leader name, and leader email are required" },
         { status: 400 }
       );
     }
@@ -55,6 +55,8 @@ export async function POST(request: NextRequest) {
       data: {
         name,
         slug,
+        leaderName,
+        leaderEmail,
         emails,
       },
     });

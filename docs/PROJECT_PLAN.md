@@ -8,8 +8,8 @@
 - **Database:** PostgreSQL + Prisma ORM
 - **UI:** Tailwind CSS + shadcn/ui
 - **Auth:** Simple email/password (single admin)
-- **Hosting:** Railway/Render
-- **Port:** localhost:5000 (development)
+- **Hosting:** Railway
+- **Port:** localhost:3333 (development)
 
 ## Brand Colors
 
@@ -22,25 +22,25 @@
 
 ---
 
-## Phase 1: Project Foundation
+## Phase 1: Project Foundation ✅
 
 - [x] Initialize Next.js + TypeScript + ESLint
 - [x] Configure Tailwind with custom color palette
 - [x] Install shadcn/ui base components
 - [x] Set up Prisma + PostgreSQL schema
-- [x] Configure dev server for port 5000
+- [x] Configure dev server for port 3333
 - [x] Create docs structure
-- [x] Create Claude commands for session management
-- [ ] Initial git commit
+- [x] Initial git commit
 
-## Phase 2: Database & Data Layer
+## Phase 2: Database & Data Layer ✅
 
 - [x] Define Prisma schema (Admin, Group, FormSubmission)
 - [x] Run initial migration
 - [x] Create seed script for test data
-- [ ] Create database utility functions (CRUD operations)
+- [x] Add leader fields to Group model
+- [x] Add isLeader field to FormSubmission model
 
-## Phase 3: Authentication
+## Phase 3: Authentication ✅
 
 - [x] Install bcrypt for password hashing
 - [x] Create login page UI
@@ -48,43 +48,52 @@
 - [x] Create auth middleware for protected routes
 - [x] Create admin seed script with hashed password
 
-## Phase 4: Admin Dashboard - Core
+## Phase 4: Admin Dashboard - Core ✅
 
 - [x] Dashboard layout with sidebar/navigation
 - [x] Dashboard home page with stats overview
 - [x] Groups list page (active groups)
-- [x] Create group form/modal
+- [x] Create group form/modal (with leader name/email)
 - [x] Group detail page
   - [x] View group info
-  - [x] Copy shareable link
+  - [x] Copy shareable links (leader + member)
   - [x] Status toggles (Paid, Picked Up, Returned)
   - [x] Notes section (add/edit)
   - [x] View submissions (table + card views)
+  - [x] Leader badge on submissions
 - [x] Archived groups section
 - [x] Archive flow (auto-archive on return)
 
-## Phase 5: Public Form System
+## Phase 5: Public Form System ✅
 
-### 5A: Test Form (First)
+### 5A: Basic Form Infrastructure ✅
 - [x] Create public route `/group/[slug]`
-- [x] Simple test form (name, email, phone, notes)
 - [x] Mobile-responsive design
 - [x] Form validation (client + server)
 - [x] Submission handling
 - [x] Success confirmation page
-- [ ] **Test full pipeline end-to-end**
 
-### 5B: Full Form (When specs provided)
-- [ ] Implement detailed form fields
-- [ ] Conditional field logic ("Add Family Member" pattern)
-- [ ] Full validation rules
-- [ ] Complete branded styling
+### 5B: Full Form Implementation ✅
+- [x] Leader form (`/group/[slug]/leader`)
+  - [x] Rental details (start date, end date, ski resort)
+  - [x] Leader's personal sizing info
+  - [x] Add Family Members functionality
+- [x] Member form (`/group/[slug]`)
+  - [x] Personal info fields
+  - [x] Add Another Person functionality
+- [x] Conditional sizing fields by clothing type
+  - [x] Men's/Women's: Pants
+  - [x] Youth/Toddler: Bibs
+  - [x] Youth: Gender dropdown (Boys/Girls)
+- [x] Sizing labels on all dropdowns
+- [x] Full validation rules
+- [x] Submissions API updates group rental details
 
 ## Phase 6: Data Display & Polish
 
-- [ ] Table view component for submissions
-- [ ] Card view component for submissions
-- [ ] Toggle between views
+- [x] Table view component for submissions
+- [x] Card view component for submissions
+- [x] Toggle between views
 - [ ] Search/filter functionality
 - [ ] Performance optimization
 - [ ] Mobile responsiveness audit
@@ -98,7 +107,7 @@
 
 ## Phase 8: Deployment
 
-- [ ] Railway/Render configuration
+- [ ] Railway configuration
 - [ ] Environment variables setup
 - [ ] Database migration in production
 - [ ] Domain configuration
@@ -115,6 +124,16 @@
 
 ---
 
-## Notes
+## Session History
 
-_Add session notes and decisions here as the project progresses._
+### Session 001 (Nov 22, 2025)
+- Completed Phases 1-4 and Phase 5A
+- Set up foundation, database, auth, admin dashboard
+- Created basic public form
+
+### Session 002 (Nov 22, 2025)
+- Completed Phase 5B full form implementation
+- Added leader/member form separation
+- Implemented conditional sizing fields
+- Added gender selection for youth
+- Added sizing labels to all dropdowns
