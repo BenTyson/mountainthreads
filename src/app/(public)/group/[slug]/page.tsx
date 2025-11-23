@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import prisma from "@/lib/db";
 import { RentalForm } from "@/components/forms/rental-form";
 
@@ -49,10 +50,14 @@ export default async function PublicFormPage({ params }: PageProps) {
       {/* Header */}
       <header className="bg-white border-b border-border">
         <div className="max-w-2xl mx-auto px-4 py-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">MT</span>
-            </div>
+          <div className="flex items-center gap-4">
+            <Image
+              src="/logos/IconMT.png"
+              alt="Mountain Threads"
+              width={48}
+              height={48}
+              className="h-12 w-auto"
+            />
             <div>
               <h1 className="text-xl font-semibold">Mountain Threads</h1>
               <p className="text-sm text-muted-foreground">Gear Rental Form</p>

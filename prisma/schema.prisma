@@ -45,6 +45,9 @@ model Group {
   // Admin notes
   notes       String?  @db.Text
 
+  // Expected group size (for planning)
+  expectedSize Int?
+
   // Email list for member invitations (stored as JSON array)
   emails      String[] @default([])
 

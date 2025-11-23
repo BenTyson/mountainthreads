@@ -75,8 +75,9 @@ export const HELMET_SIZES: Record<ClothingType, string[]> = {
 export const PAYMENT_OPTIONS = [
   { value: "individually", label: "Individually" },
   { value: "family", label: "For my family members" },
-  { value: "entire-group", label: "Entire Group" },
-  { value: "someone-else", label: "Someone Else is Paying for me" },
+  { value: "entire-group", label: "For the entire group" },
+  { value: "someone-else", label: "Someone else is paying for me" },
+  { value: "not-sure", label: "I'm not sure" },
 ];
 
 // Helper to check if clothing type uses pants (vs bibs)

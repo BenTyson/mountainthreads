@@ -84,15 +84,10 @@ export function GroupActions({ group }: { group: Group }) {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-4">
+    <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label htmlFor="paid" className="text-base">Paid</Label>
-            <p className="text-sm text-muted-foreground">
-              Payment has been received
-            </p>
-          </div>
+          <Label htmlFor="paid" className="text-sm font-medium">Paid</Label>
           <Switch
             id="paid"
             checked={group.paid}
@@ -102,12 +97,7 @@ export function GroupActions({ group }: { group: Group }) {
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label htmlFor="pickedUp" className="text-base">Picked Up</Label>
-            <p className="text-sm text-muted-foreground">
-              Gear has been picked up
-            </p>
-          </div>
+          <Label htmlFor="pickedUp" className="text-sm font-medium">Picked Up</Label>
           <Switch
             id="pickedUp"
             checked={group.pickedUp}
@@ -117,12 +107,7 @@ export function GroupActions({ group }: { group: Group }) {
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label htmlFor="returned" className="text-base">Returned</Label>
-            <p className="text-sm text-muted-foreground">
-              Gear has been returned (will archive group)
-            </p>
-          </div>
+          <Label htmlFor="returned" className="text-sm font-medium">Returned</Label>
           <Switch
             id="returned"
             checked={group.returned}
@@ -132,13 +117,13 @@ export function GroupActions({ group }: { group: Group }) {
         </div>
       </div>
 
-      <div className="pt-4 border-t border-border">
+      <div className="pt-3 border-t border-border">
         <Button
           variant="outline"
           size="sm"
           onClick={archiveGroup}
           disabled={loading}
-          className="text-muted-foreground"
+          className="text-muted-foreground w-full"
         >
           <Archive className="mr-2 h-4 w-4" />
           Archive Group

@@ -165,10 +165,10 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
         />
       </div>
 
-      {/* Family Members */}
+      {/* Additional People */}
       {familyMembers.length > 0 && (
         <div className="space-y-4">
-          <h3 className="font-semibold text-lg">Family Members</h3>
+          <h3 className="font-semibold text-lg">Additional People</h3>
           {familyMembers.map((member, index) => (
             <MemberFields
               key={index}
@@ -176,7 +176,8 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
               onChange={(data) => updateFamilyMember(index, data)}
               onRemove={() => removeFamilyMember(index)}
               showRemove={true}
-              title={`Family Member ${index + 1}`}
+              title={`Additional Person ${index + 1}`}
+              emailRequired={false}
             />
           ))}
         </div>
@@ -189,7 +190,7 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
         className="w-full"
       >
         <Plus className="mr-2 h-4 w-4" />
-        Add Family Member
+        Add Additional Person
       </Button>
 
       {error && (

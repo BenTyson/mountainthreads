@@ -6,6 +6,7 @@ import { GroupActions } from "@/components/admin/group-actions";
 import { GroupNotes } from "@/components/admin/group-notes";
 import { SubmissionsTable } from "@/components/admin/submissions-table";
 import { CopyLinkButton } from "@/components/admin/copy-link-button";
+import { EditGroupButton } from "@/components/admin/edit-group-button";
 import { ArrowLeft, User, Calendar, Mail, MapPin, CalendarDays } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
         description={group.archived ? "Archived group" : "Active rental group"}
         action={
           <div className="flex items-center gap-2">
+            <EditGroupButton group={group} />
             <CopyLinkButton slug={group.slug} type="leader" label="Copy Leader Link" />
             <CopyLinkButton slug={group.slug} type="member" label="Copy Member Link" />
           </div>
@@ -61,163 +63,132 @@ export default async function GroupDetailPage({ params }: PageProps) {
           Back to Groups
         </Link>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Main content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Submissions */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>
-                  Submissions ({group.submissions.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <SubmissionsTable submissions={group.submissions} />
-              </CardContent>
-            </Card>
+        {/* Submissions - Full Width */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>
+              {group.name} ({group.submissions.length}{group.expectedSize ? `/${group.expectedSize}` : ""})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <SubmissionsTable submissions={group.submissions} />
+          </CardContent>
+        </Card>
 
-            {/* Status Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Status</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <GroupActions group={group} />
-              </CardContent>
-            </Card>
-          </div>
+        {/* Info Cards - Flow in columns */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {/* Leader Card */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <User className="h-4 w-4" />
+                Group Leader
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div>
+                <p className="font-medium">{group.leaderName || "Not set"}</p>
+                <p className="text-sm text-muted-foreground">{group.leaderEmail || ""}</p>
+              </div>
+              {leaderSubmitted ? (
+                <p className="text-xs text-success font-medium">✓ Leader has submitted</p>
+              ) : (
+                <p className="text-xs text-warning font-medium">⏳ Awaiting leader submission</p>
+              )}
+            </CardContent>
+          </Card>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Leader Card */}
+          {/* Rental Details Card */}
+          {(group.rentalStartDate || group.rentalEndDate || group.skiResort) && (
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  Group Leader
-                </CardTitle>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Rental Details</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <p className="font-medium">{group.leaderName || "Not set"}</p>
-                  <p className="text-sm text-muted-foreground">{group.leaderEmail || ""}</p>
-                </div>
-                <div className="pt-2 border-t">
-                  <p className="text-xs text-muted-foreground mb-1">Leader Form URL:</p>
-                  <code className="text-xs bg-muted px-2 py-1 rounded block truncate">
-                    {leaderFormUrl}
-                  </code>
-                </div>
-                {leaderSubmitted ? (
-                  <p className="text-xs text-success font-medium">✓ Leader has submitted</p>
-                ) : (
-                  <p className="text-xs text-warning font-medium">⏳ Awaiting leader submission</p>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Rental Details Card */}
-            {(group.rentalStartDate || group.rentalEndDate || group.skiResort) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Rental Details</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {group.skiResort && (
-                    <div className="flex items-center gap-3">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm font-medium">Resort</p>
-                        <p className="text-sm text-muted-foreground">{group.skiResort}</p>
-                      </div>
-                    </div>
-                  )}
-                  {group.rentalStartDate && (
-                    <div className="flex items-center gap-3">
-                      <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm font-medium">Rental Period</p>
-                        <p className="text-sm text-muted-foreground">
-                          {new Date(group.rentalStartDate).toLocaleDateString()}
-                          {group.rentalEndDate && ` - ${new Date(group.rentalEndDate).toLocaleDateString()}`}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Form Links Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Form Links</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Member Form URL:</p>
-                  <code className="text-xs bg-muted px-2 py-1 rounded block truncate">
-                    {memberFormUrl}
-                  </code>
-                </div>
-                <div className="flex gap-2">
-                  <Link href={leaderFormUrl} target="_blank" className="flex-1">
-                    <Button variant="outline" size="sm" className="w-full">
-                      View Leader Form
-                    </Button>
-                  </Link>
-                  <Link href={memberFormUrl} target="_blank" className="flex-1">
-                    <Button variant="outline" size="sm" className="w-full">
-                      View Member Form
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Info Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Group Info</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">Created</p>
-                    <p className="text-sm text-muted-foreground">
-                      {new Date(group.createdAt).toLocaleDateString()}
-                    </p>
+              <CardContent className="space-y-2">
+                {group.skiResort && (
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <span className="text-sm truncate">{group.skiResort}</span>
                   </div>
-                </div>
-                {group.emails.length > 0 && (
-                  <div className="flex items-start gap-3">
-                    <Mail className="h-4 w-4 text-muted-foreground mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium">Member Emails</p>
-                      <div className="space-y-1 mt-1">
-                        {group.emails.map((email, i) => (
-                          <p key={i} className="text-sm text-muted-foreground">
-                            {email}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
+                )}
+                {group.rentalStartDate && (
+                  <div className="flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <span className="text-sm">
+                      {new Date(group.rentalStartDate).toLocaleDateString()}
+                      {group.rentalEndDate && ` - ${new Date(group.rentalEndDate).toLocaleDateString()}`}
+                    </span>
                   </div>
                 )}
               </CardContent>
             </Card>
+          )}
 
-            {/* Notes Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Notes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <GroupNotes groupId={group.id} initialNotes={group.notes || ""} />
-              </CardContent>
-            </Card>
-          </div>
+          {/* Form Links Card */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Form Links</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="grid grid-cols-2 gap-2">
+                <Link href={leaderFormUrl} target="_blank">
+                  <Button variant="outline" size="sm" className="w-full text-xs">
+                    View Leader
+                  </Button>
+                </Link>
+                <Link href={memberFormUrl} target="_blank">
+                  <Button variant="outline" size="sm" className="w-full text-xs">
+                    View Member
+                  </Button>
+                </Link>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <CopyLinkButton slug={group.slug} type="leader" label="Copy" className="w-full text-xs" />
+                <CopyLinkButton slug={group.slug} type="member" label="Copy" className="w-full text-xs" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Group Info Card */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Group Info</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <span className="text-sm">Created {new Date(group.createdAt).toLocaleDateString()}</span>
+              </div>
+              {group.emails.length > 0 && (
+                <div className="flex items-start gap-2">
+                  <Mail className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-muted-foreground">
+                    {group.emails.length} member email{group.emails.length !== 1 ? 's' : ''}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Status Card */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Status</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <GroupActions group={group} />
+            </CardContent>
+          </Card>
+
+          {/* Notes Card */}
+          <Card className="sm:col-span-2 lg:col-span-2">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Notes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <GroupNotes groupId={group.id} initialNotes={group.notes || ""} />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

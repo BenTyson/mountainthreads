@@ -42,12 +42,20 @@ export async function PATCH(
     const body = await request.json();
 
     // Only allow specific fields to be updated
-    const allowedFields = ["name", "notes", "paid", "pickedUp", "returned", "archived", "emails"];
+    const allowedFields = [
+      "name", "notes", "paid", "pickedUp", "returned", "archived", "emails",
+      "leaderName", "leaderEmail", "expectedSize", "rentalStartDate", "rentalEndDate", "skiResort"
+    ];
     const updateData: Record<string, unknown> = {};
 
     for (const field of allowedFields) {
       if (body[field] !== undefined) {
-        updateData[field] = body[field];
+        // Handle date fields
+        if ((field === "rentalStartDate" || field === "rentalEndDate") && body[field]) {
+          updateData[field] = new Date(body[field]);
+        } else {
+          updateData[field] = body[field];
+        }
       }
     }
 

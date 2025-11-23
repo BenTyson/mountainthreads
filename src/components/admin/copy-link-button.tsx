@@ -8,9 +8,10 @@ interface CopyLinkButtonProps {
   slug: string;
   type?: "leader" | "member";
   label?: string;
+  className?: string;
 }
 
-export function CopyLinkButton({ slug, type = "member", label }: CopyLinkButtonProps) {
+export function CopyLinkButton({ slug, type = "member", label, className }: CopyLinkButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const copyLink = async () => {
@@ -24,15 +25,15 @@ export function CopyLinkButton({ slug, type = "member", label }: CopyLinkButtonP
   const buttonLabel = label || (type === "leader" ? "Copy Leader Link" : "Copy Link");
 
   return (
-    <Button variant="outline" size="sm" onClick={copyLink}>
+    <Button variant="outline" size="sm" onClick={copyLink} className={className}>
       {copied ? (
         <>
-          <Check className="mr-2 h-4 w-4" />
-          Copied!
+          <Check className="mr-1 h-3 w-3" />
+          Copied
         </>
       ) : (
         <>
-          <Copy className="mr-2 h-4 w-4" />
+          <Copy className="mr-1 h-3 w-3" />
           {buttonLabel}
         </>
       )}

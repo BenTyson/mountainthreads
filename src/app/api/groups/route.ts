@@ -32,7 +32,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, leaderName, leaderEmail, emails = [] } = body;
+    const { name, leaderName, leaderEmail, expectedSize } = body;
 
     if (!name || !leaderName || !leaderEmail) {
       return NextResponse.json(
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
         slug,
         leaderName,
         leaderEmail,
-        emails,
+        expectedSize: expectedSize ?? null,
       },
     });
 

@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Plus } from "lucide-react";
 
 export function CreateGroupButton() {
@@ -23,7 +22,7 @@ export function CreateGroupButton() {
   const [name, setName] = useState("");
   const [leaderName, setLeaderName] = useState("");
   const [leaderEmail, setLeaderEmail] = useState("");
-  const [emails, setEmails] = useState("");
+  const [expectedSize, setExpectedSize] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,10 +37,7 @@ export function CreateGroupButton() {
           name,
           leaderName,
           leaderEmail,
-          emails: emails
-            .split(/[,\n]/)
-            .map((e) => e.trim())
-            .filter((e) => e),
+          expectedSize: expectedSize ? parseInt(expectedSize, 10) : null,
         }),
       });
 
@@ -51,7 +47,7 @@ export function CreateGroupButton() {
         setName("");
         setLeaderName("");
         setLeaderEmail("");
-        setEmails("");
+        setExpectedSize("");
         router.refresh();
         router.push(`/groups/${group.id}`);
       }
@@ -119,16 +115,17 @@ export function CreateGroupButton() {
 
             <div className="border-t pt-4">
               <div className="grid gap-2">
-                <Label htmlFor="emails">Other Member Emails (optional)</Label>
-                <Textarea
-                  id="emails"
-                  placeholder="Enter email addresses, one per line or comma-separated"
-                  value={emails}
-                  onChange={(e) => setEmails(e.target.value)}
-                  rows={3}
+                <Label htmlFor="expectedSize">Expected Group Size</Label>
+                <Input
+                  id="expectedSize"
+                  type="number"
+                  min="1"
+                  placeholder="e.g., 4"
+                  value={expectedSize}
+                  onChange={(e) => setExpectedSize(e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Additional group members. You can add more later.
+                  How many people are expected in this group?
                 </p>
               </div>
             </div>

@@ -1,6 +1,6 @@
 # Current Project Status
 
-> Last updated: Session 002 (Nov 22, 2025)
+> Last updated: Session 003 (Nov 23, 2025)
 
 ## Completed Phases
 
@@ -20,33 +20,39 @@
 - **Credentials:** `admin@mountainthreads.com` / `threads`
 
 ### Phase 4: Admin Dashboard ✅
-- Dashboard with stats overview
-- Groups list (table view)
-- Group detail page (submissions, status toggles, notes)
+- Dashboard with compact stats overview
+- "Departures Within 7 Days" section
+- Recent Groups with search
+- Groups list with filtering/sorting
+- Group detail page (submissions, status toggles, notes, edit modal)
 - Archived groups section
-- Create group modal with leader name/email
+- Create group modal (name, leader info, expected size)
 
 ### Phase 5: Form System ✅
 - **Leader Form** at `/group/[slug]/leader`
   - Rental details (start date, end date, ski resort)
   - Leader's personal sizing info
-  - Add Family Members functionality
+  - Add Additional Person functionality
 - **Member Form** at `/group/[slug]`
   - Personal info + full sizing fields
+  - Email optional for additional people (children)
   - Add Another Person functionality
-- Conditional sizing based on clothing type:
-  - Men's/Women's: Pants
-  - Youth/Toddler: Bibs
-  - Youth: Gender selection (Boys/Girls) for sizing labels
-- Sizing labels on all dropdowns (e.g., "Men's Sizes", "Youth Boys Sizes")
-- Submissions display with Leader badge and organized sections
+- Size guide modals for Men's/Women's Jackets/Pants
+- Conditional sizing based on clothing type
+- Full-width dropdowns throughout
+
+### Phase 6: Polish ✅
+- Logo integration (sidebar, forms, favicon)
+- Status icons with tooltips (replaces badges)
+- Search/filter on Groups page (name, status, sort)
+- Search on Dashboard recent groups
+- Edit Group modal (name, expected size, leader info, rental details)
+- Expected group size tracking (displays as X/Y)
 
 ## What's Next
 
-1. **Phase 6: Polish** - Search/filter, performance audit
-2. **Phase 7: Testing** - Unit, integration, E2E
-3. **Phase 8: Deployment** - Railway setup, domain config
-4. **Logo assets** - Client will provide
+1. **Phase 7: Testing** - Unit, integration, E2E
+2. **Phase 8: Deployment** - Railway setup, domain config
 
 ## Quick Commands
 

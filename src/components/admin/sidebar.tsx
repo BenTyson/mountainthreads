@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
@@ -29,14 +30,16 @@ export function Sidebar() {
   return (
     <aside className="flex h-screen w-64 flex-col border-r border-border bg-white">
       {/* Logo */}
-      <div className="flex h-16 items-center border-b border-border px-6">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <span className="text-sm font-bold text-white">MT</span>
-          </div>
-          <span className="text-lg font-semibold text-foreground">
-            Mountain Threads
-          </span>
+      <div className="flex h-16 items-center border-b border-border px-4">
+        <Link href="/dashboard" className="flex items-center">
+          <Image
+            src="/logos/PrimaryMT.png"
+            alt="Mountain Threads"
+            width={180}
+            height={45}
+            className="h-9 w-auto"
+            priority
+          />
         </Link>
       </div>
 

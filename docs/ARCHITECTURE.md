@@ -48,14 +48,22 @@ src/
 ├── components/
 │   ├── ui/                # shadcn/ui components
 │   ├── admin/             # Admin-specific components
+│   │   ├── create-group-button.tsx  # Create group modal
+│   │   ├── edit-group-button.tsx    # Edit group modal
+│   │   ├── group-filters.tsx        # Search/filter/sort controls
+│   │   ├── status-icons.tsx         # Status icon indicators
+│   │   └── recent-groups-list.tsx   # Searchable group list
 │   └── forms/             # Form components
-│       ├── member-fields.tsx  # Reusable sizing fields
-│       ├── rental-form.tsx    # Member form
-│       └── leader-form.tsx    # Leader form
+│       ├── member-fields.tsx     # Reusable sizing fields
+│       ├── rental-form.tsx       # Member form
+│       ├── leader-form.tsx       # Leader form
+│       ├── size-guide-button.tsx # Size guide modal trigger
+│       └── size-guide-modal.tsx  # Size chart modal
 ├── lib/
 │   ├── db.ts              # Prisma client singleton
 │   ├── auth/              # Authentication utilities
 │   ├── form-options.ts    # Sizing constants & helpers
+│   ├── size-guides.ts     # Size chart data for modals
 │   └── utils.ts           # General utilities (shadcn)
 └── generated/             # Generated files (Prisma)
 ```
@@ -77,6 +85,7 @@ Represents a rental group (e.g., "Tyson Family").
 - `name`: Display name
 - `leaderName`: Group leader's name
 - `leaderEmail`: Group leader's email
+- `expectedSize`: Expected number of people in group (optional)
 - `rentalStartDate`: Rental period start (set by leader)
 - `rentalEndDate`: Rental period end (set by leader)
 - `skiResort`: Destination resort (set by leader)
@@ -146,11 +155,32 @@ RESTful API routes:
 - `POST /api/auth/logout` - Admin logout
 - `GET /api/auth/me` - Get current user
 - `GET /api/groups` - List groups
-- `POST /api/groups` - Create group
+- `POST /api/groups` - Create group (name, leaderName, leaderEmail, expectedSize)
 - `GET /api/groups/[id]` - Get group details
-- `PATCH /api/groups/[id]` - Update group
+- `PATCH /api/groups/[id]` - Update group (name, notes, paid, pickedUp, returned, archived, leaderName, leaderEmail, expectedSize, rentalStartDate, rentalEndDate, skiResort)
 - `DELETE /api/groups/[id]` - Delete group
+- `PATCH /api/submissions/[id]` - Update submission data
+- `DELETE /api/submissions/[id]` - Delete submission
 - `POST /api/submissions` - Submit form (public, updates group if leader)
+
+## UI Patterns
+
+### Status Icons
+Status is displayed using icons with tooltips instead of badges:
+| Status | Icon | Color |
+|--------|------|-------|
+| Unpaid | `Circle` (empty) | Amber |
+| Paid | `CircleCheck` | Green |
+| Picked Up | `Package` | Blue |
+| Returned | `RotateCcw` | Gray |
+
+Icons appear progressively (Picked Up only shows after Paid, Returned only after Picked Up).
+
+### Groups Filtering
+Groups page supports URL-based filtering:
+- `?search=name` - Filter by group name
+- `?status=unpaid|paid|picked-up|returned` - Filter by status
+- `?sort=newest|oldest|name-asc|name-desc|departure|submissions` - Sort order
 
 ## Form URLs
 
