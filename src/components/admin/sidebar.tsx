@@ -15,7 +15,8 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Groups", href: "/groups", icon: Users },
   { name: "Archived", href: "/archived", icon: Archive },
-];
+  { name: "Sign Out", href: "/logout", icon: LogOut, isLogout: true },
+] as const;
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -47,6 +48,20 @@ export function Sidebar() {
       <nav className="flex-1 space-y-1 px-3 py-4">
         {navigation.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+
+          if ('isLogout' in item && item.isLogout) {
+            return (
+              <button
+                key={item.name}
+                onClick={handleLogout}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <item.icon className="h-5 w-5" />
+                {item.name}
+              </button>
+            );
+          }
+
           return (
             <Link
               key={item.name}
@@ -64,17 +79,6 @@ export function Sidebar() {
           );
         })}
       </nav>
-
-      {/* Footer */}
-      <div className="border-t border-border p-3">
-        <button
-          onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-        >
-          <LogOut className="h-5 w-5" />
-          Sign Out
-        </button>
-      </div>
     </aside>
   );
 }

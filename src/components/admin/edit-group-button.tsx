@@ -15,21 +15,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import type { Group } from "@/lib/types";
 
-interface Group {
-  id: string;
-  name: string;
-  leaderName: string | null;
-  leaderEmail: string | null;
-  expectedSize: number | null;
-  rentalStartDate: Date | string | null;
-  rentalEndDate: Date | string | null;
-  skiResort: string | null;
-}
-
-interface EditGroupButtonProps {
-  group: Group;
-}
+type EditGroupButtonProps = {
+  group: Pick<Group, "id" | "name" | "leaderName" | "leaderEmail" | "expectedSize" | "rentalStartDate" | "rentalEndDate" | "skiResort">;
+};
 
 function formatDateForInput(date: Date | string | null): string {
   if (!date) return "";

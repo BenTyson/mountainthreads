@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-
-const COOKIE_NAME = "mt_auth_token";
+import { AUTH_COOKIE_NAME } from "@/lib/constants";
 
 // Routes that require authentication
 const protectedRoutes = ["/dashboard", "/groups", "/archived"];
@@ -11,7 +10,7 @@ const authRoutes = ["/login"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get(COOKIE_NAME)?.value;
+  const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
 
   // Check if the current route is protected
   const isProtectedRoute = protectedRoutes.some(

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,9 +47,13 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
-            <span className="text-white font-bold text-lg">MT</span>
-          </div>
+          <Image
+            src="/logos/IconMT.png"
+            alt="Mountain Threads"
+            width={64}
+            height={64}
+            className="mx-auto mb-4"
+          />
           <CardTitle className="text-2xl">Mountain Threads</CardTitle>
           <CardDescription>Sign in to access the admin dashboard</CardDescription>
         </CardHeader>

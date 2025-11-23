@@ -5,23 +5,11 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { StatusIcons } from "@/components/admin/status-icons";
+import type { GroupWithCount } from "@/lib/types";
 
-interface Group {
-  id: string;
-  name: string;
-  paid: boolean;
-  pickedUp: boolean;
-  returned: boolean;
-  expectedSize: number | null;
-  rentalStartDate: Date | string | null;
-  _count: {
-    submissions: number;
-  };
-}
-
-interface RecentGroupsListProps {
-  groups: Group[];
-}
+type RecentGroupsListProps = {
+  groups: GroupWithCount[];
+};
 
 export function RecentGroupsList({ groups }: RecentGroupsListProps) {
   const [search, setSearch] = useState("");

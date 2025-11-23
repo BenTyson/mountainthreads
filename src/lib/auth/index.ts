@@ -1,9 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import { AUTH_COOKIE_NAME } from "@/lib/constants";
 
 const JWT_SECRET = process.env.NEXTAUTH_SECRET || "fallback-secret-change-me";
-const COOKIE_NAME = "mt_auth_token";
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12);
@@ -30,7 +30,7 @@ export function verifyToken(token: string): { adminId: string } | null {
 
 export async function setAuthCookie(token: string): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAME, token, {
+  cookieStore.set(AUTH_COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -41,12 +41,12 @@ export async function setAuthCookie(token: string): Promise<void> {
 
 export async function removeAuthCookie(): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.delete(COOKIE_NAME);
+  cookieStore.delete(AUTH_COOKIE_NAME);
 }
 
 export async function getAuthToken(): Promise<string | null> {
   const cookieStore = await cookies();
-  return cookieStore.get(COOKIE_NAME)?.value || null;
+  return cookieStore.get(AUTH_COOKIE_NAME)?.value || null;
 }
 
 export async function getCurrentAdmin(): Promise<{ adminId: string } | null> {

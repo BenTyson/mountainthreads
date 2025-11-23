@@ -7,16 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Archive, Trash2 } from "lucide-react";
+import type { Group } from "@/lib/types";
 
-interface Group {
-  id: string;
-  paid: boolean;
-  pickedUp: boolean;
-  returned: boolean;
-  archived: boolean;
-}
+type GroupActionsProps = {
+  group: Pick<Group, "id" | "paid" | "pickedUp" | "returned" | "archived">;
+};
 
-export function GroupActions({ group }: { group: Group }) {
+export function GroupActions({ group }: GroupActionsProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 

@@ -1,5 +1,5 @@
 import { Header } from "@/components/admin/header";
-import { Badge } from "@/components/ui/badge";
+import { StatusIcons } from "@/components/admin/status-icons";
 import {
   Table,
   TableBody,
@@ -68,11 +68,11 @@ export default async function ArchivedPage() {
                       {group._count.submissions}
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Badge className="bg-success text-white">Paid</Badge>
-                        <Badge className="bg-primary text-white">Picked Up</Badge>
-                        <Badge className="bg-secondary text-white">Returned</Badge>
-                      </div>
+                      <StatusIcons
+                        paid={group.paid}
+                        pickedUp={group.pickedUp}
+                        returned={group.returned}
+                      />
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {new Date(group.updatedAt).toLocaleDateString()}

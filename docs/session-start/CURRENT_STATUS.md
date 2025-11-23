@@ -1,6 +1,20 @@
 # Current Project Status
 
-> Last updated: Session 003 (Nov 23, 2025)
+> Last updated: Session 004 (Nov 23, 2025)
+
+## Current Branch: `staging`
+
+**Remember:** Always work on `staging`. Never commit directly to `main`.
+
+## Environments
+
+| Environment | Branch | URL | Status |
+|-------------|--------|-----|--------|
+| Local | staging | localhost:3333 | Development |
+| Staging | staging | [TBD - Railway] | Testing |
+| Production | main | [TBD - Custom domain] | Live |
+
+**Credentials (staging):** `admin@mountainthreads.com` / `threads`
 
 ## Completed Phases
 
@@ -17,7 +31,6 @@
 - JWT-based auth with HTTP-only cookies
 - Login page at `/login`
 - Middleware protects admin routes
-- **Credentials:** `admin@mountainthreads.com` / `threads`
 
 ### Phase 4: Admin Dashboard ✅
 - Dashboard with compact stats overview
@@ -42,28 +55,51 @@
 - Full-width dropdowns throughout
 
 ### Phase 6: Polish ✅
-- Logo integration (sidebar, forms, favicon)
+- Logo integration (sidebar, forms, login, favicon)
 - Status icons with tooltips (replaces badges)
 - Search/filter on Groups page (name, status, sort)
 - Search on Dashboard recent groups
 - Edit Group modal (name, expected size, leader info, rental details)
 - Expected group size tracking (displays as X/Y)
+- Sign Out in main navigation
+
+### Phase 7: Code Cleanup ✅
+- Removed unused `uid` field from schema
+- Consolidated `AUTH_COOKIE_NAME` constant
+- Created shared types (`lib/types.ts`)
+- Extracted shared form layout component
+- Consistent StatusIcons usage across pages
+
+### Phase 8: Deployment Setup (In Progress)
+- [ ] Create staging branch
+- [ ] Set up Railway staging service
+- [ ] Set up Railway production service
+- [ ] Configure auto-deploys
+- [ ] Connect custom domain
 
 ## What's Next
 
-1. **Phase 7: Testing** - Unit, integration, E2E
-2. **Phase 8: Deployment** - Railway setup, domain config
+1. **Complete Railway Setup** - See `docs/DEPLOYMENT.md`
+2. **Phase 9: Testing** - Unit, integration, E2E
+3. **Phase 10: Go Live** - Production deployment
 
 ## Quick Commands
 
 ```bash
+# Development
 npm run dev        # Start on port 3333
-npm run db:seed    # Reset test data
-npm run db:studio  # Prisma GUI
 npm run build      # Production build
+
+# Database
+npm run db:seed    # Reset test data (staging only!)
+npm run db:studio  # Prisma GUI
+
+# Git
+git branch         # Verify you're on staging
+git push           # Auto-deploys to staging
 ```
 
-## Test URLs
+## Test URLs (Local)
 
 - Admin: http://localhost:3333/dashboard
 - Leader Form: http://localhost:3333/group/tyson-family/leader

@@ -54,18 +54,11 @@ import {
   usesPants,
   type ClothingType,
 } from "@/lib/form-options";
+import type { FormSubmission } from "@/lib/types";
 
-interface Submission {
-  id: string;
-  email: string | null;
-  isLeader: boolean;
-  data: unknown;
-  createdAt: Date;
-}
-
-interface SubmissionsTableProps {
-  submissions: Submission[];
-}
+type SubmissionsTableProps = {
+  submissions: FormSubmission[];
+};
 
 // Human-readable labels for form fields
 const fieldLabels: Record<string, string> = {
@@ -111,7 +104,7 @@ const fieldOrder = [
   "paymentMethod",
 ];
 
-function SubmissionDetail({ submission }: { submission: Submission }) {
+function SubmissionDetail({ submission }: { submission: FormSubmission }) {
   const data = submission.data as Record<string, unknown>;
 
   const formatValue = (key: string, value: unknown): string => {
@@ -227,9 +220,9 @@ function SubmissionCard({
   submission,
   onView,
   onEdit,
-  onDelete
+  onDelete,
 }: {
-  submission: Submission;
+  submission: FormSubmission;
   onView: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -499,14 +492,14 @@ function EditSubmissionForm({
 
 export function SubmissionsTable({ submissions }: SubmissionsTableProps) {
   const router = useRouter();
-  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
-  const [editingSubmission, setEditingSubmission] = useState<Submission | null>(null);
-  const [deletingSubmission, setDeletingSubmission] = useState<Submission | null>(null);
+  const [selectedSubmission, setSelectedSubmission] = useState<FormSubmission | null>(null);
+  const [editingSubmission, setEditingSubmission] = useState<FormSubmission | null>(null);
+  const [deletingSubmission, setDeletingSubmission] = useState<FormSubmission | null>(null);
   const [editData, setEditData] = useState<Record<string, unknown>>({});
   const [view, setView] = useState<"table" | "cards">("table");
   const [loading, setLoading] = useState(false);
 
-  const handleEdit = (submission: Submission) => {
+  const handleEdit = (submission: FormSubmission) => {
     setEditingSubmission(submission);
     setEditData(submission.data as Record<string, unknown>);
   };

@@ -23,7 +23,6 @@ model Admin {
 // A rental group (e.g., "Tyson Family")
 model Group {
   id          String   @id @default(cuid())
-  uid         String   @unique @default(cuid()) // System-generated unique ID
   slug        String   @unique // URL-friendly name (e.g., "thetysonfamily")
   name        String   // Display name (e.g., "Tyson Family")
 
