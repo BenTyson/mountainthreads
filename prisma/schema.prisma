@@ -1,0 +1,74 @@
+// Mountain Threads Admin Dashboard - Prisma Schema
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Admin user for dashboard authentication
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // hashed password
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// A rental group (e.g., "Tyson Family")
+model Group {
+  id          String   @id @default(cuid())
+  uid         String   @unique @default(cuid()) // System-generated unique ID
+  slug        String   @unique // URL-friendly name (e.g., "thetysonfamily")
+  name        String   // Display name (e.g., "Tyson Family")
+
+  // Status tracking
+  paid        Boolean  @default(false)
+  pickedUp    Boolean  @default(false)
+  returned    Boolean  @default(false)
+  archived    Boolean  @default(false)
+
+  // Admin notes
+  notes       String?  @db.Text
+
+  // Email list for invitations (stored as JSON array)
+  emails      String[] @default([])
+
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  submissions FormSubmission[]
+
+  @@index([archived])
+  @@index([createdAt])
+}
+
+// Individual form submission from a group member
+model FormSubmission {
+  id        String   @id @default(cuid())
+
+  // Link to group
+  groupId   String
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  // Submitter info
+  email     String?
+
+  // Form data stored as flexible JSON
+  // This allows for nested fields, family members, etc.
+  data      Json
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([groupId])
+  @@index([createdAt])
+}
