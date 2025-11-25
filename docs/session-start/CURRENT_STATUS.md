@@ -12,9 +12,9 @@
 |-------------|--------|-----|--------|
 | Local | staging | localhost:3333 | Development |
 | Staging | staging | https://mtnthreads-staging.up.railway.app | Live ✅ |
-| Production | main | [TBD - Custom domain] | Pending setup |
+| Production | main | https://app.mountainthreads.org | Live ✅ |
 
-**Credentials (staging):** `admin@mountainthreads.com` / `threads`
+**Credentials:** `admin@mountainthreads.com` / `threads`
 
 ## Completed Phases
 
@@ -70,18 +70,19 @@
 - Extracted shared form layout component
 - Consistent StatusIcons usage across pages
 
-### Phase 8: Deployment Setup (In Progress)
-- [ ] Create staging branch
-- [ ] Set up Railway staging service
-- [ ] Set up Railway production service
-- [ ] Configure auto-deploys
-- [ ] Connect custom domain
+### Phase 8: Deployment ✅
+- Created staging branch (auto-deploys from `staging`)
+- Set up Railway staging service + database
+- Set up Railway production service + database
+- Configured auto-deploys for both environments
+- Connected custom domain (app.mountainthreads.org)
+- Admin footer with copyright
+- Redesigned dashboard with upcoming groups (next 2 weeks)
 
 ## What's Next
 
-1. **Complete Railway Setup** - See `docs/DEPLOYMENT.md`
-2. **Phase 9: Testing** - Unit, integration, E2E
-3. **Phase 10: Go Live** - Production deployment
+1. **Phase 9: Testing** - Unit, integration, E2E
+2. **Phase 10: Production Hardening** - Monitoring, backups, security audit
 
 ## Quick Commands
 

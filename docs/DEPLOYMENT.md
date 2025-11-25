@@ -229,4 +229,4 @@ If a deployment fails:
 |-------------|-----------|----------|
 | Local | http://localhost:3333 | http://localhost:3333/group/[slug] |
 | Staging | https://mtnthreads-staging.up.railway.app | https://mtnthreads-staging.up.railway.app/group/[slug] |
-| Production | [TBD - Custom domain] | [TBD - Custom domain] |
+| Production | https://app.mountainthreads.org | https://app.mountainthreads.org/group/[slug] |
