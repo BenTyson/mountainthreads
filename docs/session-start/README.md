@@ -32,7 +32,7 @@ git pull origin staging
 |-------------|--------|-----|----------|
 | Local | staging | localhost:3333 | Local or staging DB |
 | Staging | staging | https://mtnthreads-staging.up.railway.app | postgres-staging |
-| Production | main | [custom domain] | postgres-production |
+| Production | main | https://app.mountainthreads.org | postgres-production |
 
 ## Key Files to Read
 
