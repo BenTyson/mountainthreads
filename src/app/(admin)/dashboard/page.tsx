@@ -1,16 +1,16 @@
 import { Header } from "@/components/admin/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, CheckCircle, Clock, Archive, CalendarDays } from "lucide-react";
+import { Users, CheckCircle, Clock, Archive, CalendarDays, ArrowRight } from "lucide-react";
 import prisma from "@/lib/db";
 import Link from "next/link";
-import { RecentGroupsList } from "@/components/admin/recent-groups-list";
 import { StatusIcons } from "@/components/admin/status-icons";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = 'force-dynamic';
 
 async function getStats() {
   const now = new Date();
-  const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const fourteenDaysFromNow = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
   const [
     activeGroups,
@@ -18,8 +18,7 @@ async function getStats() {
     pendingPayment,
     pendingPickup,
     totalSubmissions,
-    recentGroups,
-    upcomingDepartures,
+    upcomingGroups,
   ] = await Promise.all([
     prisma.group.count({ where: { archived: false } }),
     prisma.group.count({ where: { archived: true } }),
@@ -27,21 +26,11 @@ async function getStats() {
     prisma.group.count({ where: { archived: false, paid: true, pickedUp: false } }),
     prisma.formSubmission.count(),
     prisma.group.findMany({
-      where: { archived: false },
-      orderBy: { createdAt: "desc" },
-      take: 5,
-      include: {
-        _count: {
-          select: { submissions: true },
-        },
-      },
-    }),
-    prisma.group.findMany({
       where: {
         archived: false,
         rentalStartDate: {
           gte: now,
-          lte: sevenDaysFromNow,
+          lte: fourteenDaysFromNow,
         },
       },
       orderBy: { rentalStartDate: "asc" },
@@ -59,8 +48,7 @@ async function getStats() {
     pendingPayment,
     pendingPickup,
     totalSubmissions,
-    recentGroups,
-    upcomingDepartures,
+    upcomingGroups,
   };
 }
 
@@ -118,18 +106,28 @@ export default async function DashboardPage() {
           </Card>
         </div>
 
-        {/* Upcoming Departures */}
-        {stats.upcomingDepartures.length > 0 && (
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <CalendarDays className="h-4 w-4" />
-                Departures Within 7 Days
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+        {/* Upcoming Groups */}
+        <Card>
+          <CardHeader className="pb-3 flex flex-row items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <CalendarDays className="h-4 w-4" />
+              Upcoming Groups (Next 2 Weeks)
+            </CardTitle>
+            <Link href="/groups">
+              <Button variant="outline" size="sm" className="gap-2">
+                View All Groups
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
+            {stats.upcomingGroups.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                No groups departing in the next 2 weeks.
+              </p>
+            ) : (
               <div className="space-y-2">
-                {stats.upcomingDepartures.map((group) => (
+                {stats.upcomingGroups.map((group) => (
                   <Link
                     key={group.id}
                     href={`/groups/${group.id}`}
@@ -147,7 +145,7 @@ export default async function DashboardPage() {
                       <div>
                         <p className="font-medium">{group.name}</p>
                         <p className="text-xs text-muted-foreground">
-                          {group._count.submissions}{group.expectedSize ? `/${group.expectedSize}` : ""} submission{group._count.submissions !== 1 ? "s" : ""}
+                          {group._count.submissions}{group.expectedSize ? `/${group.expectedSize}` : ""} people
                         </p>
                       </div>
                     </div>
@@ -160,17 +158,7 @@ export default async function DashboardPage() {
                   </Link>
                 ))}
               </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Recent Groups */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Recent Groups</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RecentGroupsList groups={stats.recentGroups} />
+            )}
           </CardContent>
         </Card>
       </div>
