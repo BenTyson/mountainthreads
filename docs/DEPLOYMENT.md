@@ -223,10 +223,10 @@ If a deployment fails:
 - Check Railway dashboard for domain status
 - Ensure SSL certificate is provisioned
 
-## URLs (Update After Setup)
+## URLs
 
 | Environment | Admin URL | Form URL |
 |-------------|-----------|----------|
 | Local | http://localhost:3333 | http://localhost:3333/group/[slug] |
-| Staging | [TBD] | [TBD] |
-| Production | [TBD] | [TBD] |
+| Staging | https://mtnthreads-staging.up.railway.app | https://mtnthreads-staging.up.railway.app/group/[slug] |
+| Production | [TBD - Custom domain] | [TBD - Custom domain] |

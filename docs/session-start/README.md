@@ -31,7 +31,7 @@ git pull origin staging
 | Environment | Branch | URL | Database |
 |-------------|--------|-----|----------|
 | Local | staging | localhost:3333 | Local or staging DB |
-| Staging | staging | [staging URL] | postgres-staging |
+| Staging | staging | https://mtnthreads-staging.up.railway.app | postgres-staging |
 | Production | main | [custom domain] | postgres-production |
 
 ## Key Files to Read

@@ -11,8 +11,8 @@
 | Environment | Branch | URL | Status |
 |-------------|--------|-----|--------|
 | Local | staging | localhost:3333 | Development |
-| Staging | staging | [TBD - Railway] | Testing |
-| Production | main | [TBD - Custom domain] | Live |
+| Staging | staging | https://mtnthreads-staging.up.railway.app | Live ✅ |
+| Production | main | [TBD - Custom domain] | Pending setup |
 
 **Credentials (staging):** `admin@mountainthreads.com` / `threads`
 
