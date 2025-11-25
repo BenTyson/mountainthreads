@@ -16,6 +16,8 @@ import { ArchiveGroupButton } from "@/components/admin/archive-group-button";
 import { GroupFilters } from "@/components/admin/group-filters";
 import { Prisma } from "@prisma/client";
 
+export const dynamic = 'force-dynamic';
+
 interface PageProps {
   searchParams: Promise<{
     search?: string;

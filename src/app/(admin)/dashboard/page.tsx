@@ -6,6 +6,8 @@ import Link from "next/link";
 import { RecentGroupsList } from "@/components/admin/recent-groups-list";
 import { StatusIcons } from "@/components/admin/status-icons";
 
+export const dynamic = 'force-dynamic';
+
 async function getStats() {
   const now = new Date();
   const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);

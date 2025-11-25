@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import prisma from "@/lib/db";
 import Link from "next/link";
 
+export const dynamic = 'force-dynamic';
+
 async function getArchivedGroups() {
   return prisma.group.findMany({
     where: { archived: true },
