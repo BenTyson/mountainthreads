@@ -79,10 +79,18 @@
 - Admin footer with copyright
 - Redesigned dashboard with upcoming groups (next 2 weeks)
 
+### Phase 9: Automated Backups ✅
+- Cloudflare R2 bucket for backup storage (10GB free tier)
+- pg-r2-backup service deployed to Railway
+- Daily automated backups at 5:00 AM UTC
+- 14-day retention policy
+- Compressed PostgreSQL dumps
+- Documented restore procedures
+
 ## What's Next
 
-1. **Phase 9: Testing** - Unit, integration, E2E
-2. **Phase 10: Production Hardening** - Monitoring, backups, security audit
+1. **Phase 10: Testing** - Unit, integration, E2E
+2. **Phase 11: Production Hardening** - Monitoring, security audit, error tracking
 
 ## Quick Commands
 

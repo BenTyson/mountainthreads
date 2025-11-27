@@ -223,6 +223,73 @@ If a deployment fails:
 - Check Railway dashboard for domain status
 - Ensure SSL certificate is provisioned
 
+## Automated Database Backups
+
+The production database is automatically backed up daily to Cloudflare R2 storage.
+
+### Backup Configuration
+
+**Service:** `pg-r2-backup` (forked from [BigDaddyAman/pg-r2-backup](https://github.com/BigDaddyAman/pg-r2-backup))
+
+**Schedule:** Daily at 5:00 AM UTC via Railway cron
+**Retention:** 14 days (keeps last 14 backups)
+**Storage:** Cloudflare R2 bucket (`mtnthreads-db-backup`)
+**Format:** Custom (compressed PostgreSQL dump)
+
+### Environment Variables
+
+| Variable | Value | Description |
+|----------|-------|-------------|
+| `DATABASE_URL` | Production DB URL | PostgreSQL connection string |
+| `R2_ENDPOINT` | Cloudflare endpoint | Your R2 account endpoint |
+| `R2_ACCESS_KEY` | API token access key | From Cloudflare R2 API tokens |
+| `R2_SECRET_KEY` | API token secret | From Cloudflare R2 API tokens |
+| `R2_BUCKET_NAME` | `mtnthreads-db-backup` | R2 bucket name |
+| `BACKUP_TIME` | `05:00` | Daily backup time (UTC) |
+| `MAX_BACKUPS` | `14` | Number of backups to retain |
+| `DUMP_FORMAT` | `custom` | PostgreSQL dump format |
+| `FILENAME_PREFIX` | `mtnthreads-prod` | Backup file prefix |
+| `BACKUP_PASSWORD` | (optional) | 7z encryption password |
+
+### Cron Schedule
+
+**Railway Settings → Cron:**
+- **Command:** `python main.py`
+- **Schedule:** `0 5 * * *` (daily at 5:00 AM UTC)
+
+### Verifying Backups
+
+1. **Check Cloudflare R2:**
+   - Go to Cloudflare Dashboard → R2 → `mtnthreads-db-backup`
+   - Verify daily backup files appear (format: `mtnthreads-prod-YYYY-MM-DD.dump`)
+
+2. **Check Railway Logs:**
+   - Go to pg-r2-backup service → Deployments
+   - View logs for messages: `[INFO] Backup completed successfully`
+
+### Manual Backup Trigger
+
+To create an immediate backup:
+1. Go to Railway → pg-r2-backup service → Deployments
+2. Click latest deployment → "Redeploy"
+3. Watch logs to confirm completion
+
+### Restoring from Backup
+
+```bash
+# 1. Download backup from Cloudflare R2
+# (Use R2 dashboard or CLI)
+
+# 2. Restore to local database (for testing)
+pg_restore -d your_database_name backup-file.dump
+
+# 3. Restore to Railway production (use with caution!)
+# Get production DATABASE_URL from Railway
+pg_restore -d "postgresql://user:pass@host:port/db" backup-file.dump
+```
+
+**⚠️ Warning:** Always test restore on staging database first before restoring to production.
+
 ## URLs
 
 | Environment | Admin URL | Form URL |
