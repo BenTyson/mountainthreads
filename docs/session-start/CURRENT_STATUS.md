@@ -1,6 +1,6 @@
 # Current Project Status
 
-> Last updated: Session 005 (Nov 25, 2025)
+> Last updated: Session 006 (Nov 26, 2025)
 
 ## Current Branch: `staging`
 
@@ -87,10 +87,47 @@
 - Compressed PostgreSQL dumps
 - Documented restore procedures
 
+### Phase 10: Mobile UI Revamp ✅
+- **Navigation & Layout:**
+  - Hamburger menu with Sheet drawer on mobile (< 1024px)
+  - Desktop sidebar hidden on mobile, visible on desktop
+  - Responsive header with mobile menu button
+  - Minimized footer on mobile devices
+- **Tables to Cards:**
+  - Groups page: Mobile card view with actions
+  - Archived page: Mobile card view with archive dates
+  - Submissions table: Auto card view on mobile, toggleable on desktop
+- **Full-Screen Dialogs:**
+  - Create Group: Full-screen on mobile (< 640px)
+  - Edit Group: Full-screen on mobile
+  - View/Edit Submission: Full-screen on mobile
+- **Responsive Polish:**
+  - Dashboard, group detail, all pages mobile-optimized
+  - Responsive padding, spacing, and text sizes
+  - Touch-friendly button sizes (44x44px minimum)
+- **Breakpoint Strategy:**
+  - < 640px: Full-screen dialogs, single column
+  - < 768px: Cards replace tables
+  - < 1024px: Hamburger menu appears
+  - ≥ 1024px: Full desktop experience
+- New shadcn components: Sheet, Dropdown Menu
+
+### Phase 11: Form Flexibility ✅
+- **Leader Form - Required Fields:**
+  - First name, Last name, Email
+  - Rental start date, Rental return date
+  - All other fields optional (ski resort, phone, sizing, payment)
+- **Member Form - Required Fields:**
+  - First name, Last name only
+  - All other fields optional (email, phone, sizing, payment)
+- Improved user experience: Can submit without complete sizing info
+- Removed asterisks from optional field labels
+- Added "(optional)" placeholder text where appropriate
+
 ## What's Next
 
-1. **Phase 10: Testing** - Unit, integration, E2E
-2. **Phase 11: Production Hardening** - Monitoring, security audit, error tracking
+1. **Phase 12: Testing** - Unit, integration, E2E
+2. **Phase 13: Production Hardening** - Monitoring, security audit, error tracking
 
 ## Quick Commands
 
@@ -114,7 +151,24 @@ git push           # Auto-deploys to staging
 - Leader Form: http://localhost:3333/group/tyson-family/leader
 - Member Form: http://localhost:3333/group/tyson-family
 
-## Form Fields
+## Form Requirements
+
+### Leader Form (Required Fields Only)
+- First Name *
+- Last Name *
+- Email *
+- Rental Start Date *
+- Rental Return Date *
+
+**All sizing fields optional:** Ski resort, phone, clothing type, all sizes, payment method
+
+### Member Form (Required Fields Only)
+- First Name *
+- Last Name *
+
+**All other fields optional:** Email, phone, clothing type, all sizes, payment method
+
+### Available Sizing Fields (All Optional)
 
 | Field | Men's | Women's | Youth | Toddler |
 |-------|-------|---------|-------|---------|
