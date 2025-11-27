@@ -180,7 +180,7 @@ export function MemberFields({
         </p>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label>Clothing Type *</Label>
+            <Label>Clothing Type</Label>
             <Select value={data.clothingType} onValueChange={(v) => update("clothingType", v)}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select clothing type" />
@@ -197,7 +197,7 @@ export function MemberFields({
 
           {isYouth && (
             <div className="space-y-2">
-              <Label>Gender *</Label>
+              <Label>Gender</Label>
               <Select value={data.youthGender} onValueChange={(v) => update("youthGender", v)}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select gender" />
@@ -218,7 +218,7 @@ export function MemberFields({
           <>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Shoe Size *</Label>
+                <Label>Shoe Size</Label>
                 <Select value={data.shoeSize} onValueChange={(v) => update("shoeSize", v)}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select size" />
@@ -237,7 +237,7 @@ export function MemberFields({
               </div>
               <div className="space-y-2">
                 <Label className="inline-flex items-center">
-                  Jacket Size *
+                  Jacket Size
                   <SizeGuideButton clothingType={clothingType} item="jacket" />
                 </Label>
                 <Select value={data.jacketSize} onValueChange={(v) => update("jacketSize", v)}>
@@ -262,7 +262,7 @@ export function MemberFields({
               {showPants && (
                 <div className="space-y-2">
                   <Label className="inline-flex items-center">
-                    Pant Size *
+                    Pant Size
                     <SizeGuideButton clothingType={clothingType} item="pants" />
                   </Label>
                   <Select value={data.pantSize} onValueChange={(v) => update("pantSize", v)}>
@@ -284,7 +284,7 @@ export function MemberFields({
               )}
               {showBibs && (
                 <div className="space-y-2">
-                  <Label>Bib Size *</Label>
+                  <Label>Bib Size</Label>
                   <Select value={data.bibSize} onValueChange={(v) => update("bibSize", v)}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select size" />
@@ -303,7 +303,7 @@ export function MemberFields({
                 </div>
               )}
               <div className="space-y-2">
-                <Label>Glove Size *</Label>
+                <Label>Glove Size</Label>
                 <Select value={data.gloveSize} onValueChange={(v) => update("gloveSize", v)}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select size" />
@@ -324,7 +324,7 @@ export function MemberFields({
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Goggles *</Label>
+                <Label>Goggles</Label>
                 <Select value={data.goggles} onValueChange={(v) => update("goggles", v)}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select type" />
@@ -339,7 +339,7 @@ export function MemberFields({
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Helmet Size *</Label>
+                <Label>Helmet Size</Label>
                 <Select value={data.helmetSize} onValueChange={(v) => update("helmetSize", v)}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select size" />
@@ -374,7 +374,7 @@ export function MemberFields({
       {/* Payment */}
       {showPayment && (
         <div className="space-y-2">
-          <Label>How will you be paying? *</Label>
+          <Label>How will you be paying?</Label>
           <Select value={data.paymentMethod} onValueChange={(v) => update("paymentMethod", v)}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select payment method" />

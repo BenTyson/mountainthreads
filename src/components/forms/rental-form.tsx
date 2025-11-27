@@ -89,7 +89,7 @@ export function RentalForm({ groupId }: RentalFormProps) {
           onRemove={() => removeMember(index)}
           showRemove={members.length > 1}
           title={members.length > 1 ? `Person ${index + 1}` : undefined}
-          emailRequired={index === 0}
+          emailRequired={false}
         />
       ))}
 

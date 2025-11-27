@@ -145,12 +145,11 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
           </div>
         </div>
         <div className="space-y-2">
-          <Label>Ski Resort *</Label>
+          <Label>Ski Resort</Label>
           <Input
-            placeholder="Enter the name of the ski resort"
+            placeholder="Enter the name of the ski resort (optional)"
             value={skiResort}
             onChange={(e) => setSkiResort(e.target.value)}
-            required
           />
         </div>
       </div>
