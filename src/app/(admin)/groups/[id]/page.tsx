@@ -47,11 +47,11 @@ export default async function GroupDetailPage({ params }: PageProps) {
         title={group.name}
         description={group.archived ? "Archived group" : "Active rental group"}
         action={
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          <>
             <EditGroupButton group={group} />
             <CopyLinkButton slug={group.slug} type="leader" label="Copy Leader Link" />
             <CopyLinkButton slug={group.slug} type="member" label="Copy Member Link" />
-          </div>
+          </>
         }
       />
 
