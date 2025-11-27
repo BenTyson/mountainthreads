@@ -566,7 +566,8 @@ export function SubmissionsTable({ submissions }: SubmissionsTableProps) {
   return (
     <>
       <Tabs value={view} onValueChange={(v) => setView(v as "table" | "cards")}>
-        <div className="flex justify-end mb-4">
+        {/* Hide tab switcher on mobile, show on tablet+ */}
+        <div className="hidden md:flex justify-end mb-4">
           <TabsList className="grid w-auto grid-cols-2">
             <TabsTrigger value="table" className="gap-2">
               <TableIcon className="h-4 w-4" />
@@ -579,7 +580,8 @@ export function SubmissionsTable({ submissions }: SubmissionsTableProps) {
           </TabsList>
         </div>
 
-        <TabsContent value="table" className="m-0">
+        {/* Mobile always uses cards, desktop can toggle */}
+        <TabsContent value="table" className="hidden md:block m-0">
           <div className="rounded-md border overflow-x-auto">
             <Table>
               <TableHeader>
@@ -668,7 +670,22 @@ export function SubmissionsTable({ submissions }: SubmissionsTableProps) {
           </div>
         </TabsContent>
 
-        <TabsContent value="cards" className="m-0">
+        {/* Always show cards on mobile, toggleable on desktop */}
+        <div className="md:hidden">
+          <div className="grid gap-3">
+            {submissions.map((submission) => (
+              <SubmissionCard
+                key={submission.id}
+                submission={submission}
+                onView={() => setSelectedSubmission(submission)}
+                onEdit={() => handleEdit(submission)}
+                onDelete={() => setDeletingSubmission(submission)}
+              />
+            ))}
+          </div>
+        </div>
+
+        <TabsContent value="cards" className="hidden md:block m-0">
           <div className="grid gap-4 sm:grid-cols-2">
             {submissions.map((submission) => (
               <SubmissionCard
@@ -685,7 +702,7 @@ export function SubmissionsTable({ submissions }: SubmissionsTableProps) {
 
       {/* View Dialog */}
       <Dialog open={!!selectedSubmission} onOpenChange={() => setSelectedSubmission(null)}>
-        <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+        <DialogContent className="w-full h-full sm:h-auto sm:max-w-md sm:max-h-[80vh] sm:rounded-lg overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Submission Details</DialogTitle>
           </DialogHeader>
@@ -695,7 +712,7 @@ export function SubmissionsTable({ submissions }: SubmissionsTableProps) {
 
       {/* Edit Dialog */}
       <Dialog open={!!editingSubmission} onOpenChange={() => setEditingSubmission(null)}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="w-full h-full sm:h-auto sm:max-w-2xl sm:max-h-[80vh] sm:rounded-lg overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Submission</DialogTitle>
           </DialogHeader>

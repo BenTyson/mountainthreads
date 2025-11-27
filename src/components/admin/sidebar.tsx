@@ -18,7 +18,11 @@ const navigation = [
   { name: "Sign Out", href: "/logout", icon: LogOut, isLogout: true },
 ] as const;
 
-export function Sidebar() {
+interface SidebarProps {
+  className?: string;
+}
+
+export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -29,7 +33,7 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="flex h-screen w-64 flex-col border-r border-border bg-white">
+    <aside className={cn("flex h-screen w-64 flex-col border-r border-border bg-white", className)}>
       {/* Logo */}
       <div className="flex h-16 items-center border-b border-border px-4">
         <Link href="/dashboard" className="flex items-center">

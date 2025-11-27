@@ -1,5 +1,6 @@
 import { Header } from "@/components/admin/header";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { StatusIcons } from "@/components/admin/status-icons";
 import {
   Table,
@@ -89,9 +90,11 @@ export default async function GroupsPage({ searchParams }: PageProps) {
         action={<CreateGroupButton />}
       />
 
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         <GroupFilters />
-        <div className="rounded-lg border border-border bg-white">
+
+        {/* Desktop Table View */}
+        <div className="hidden md:block rounded-lg border border-border bg-white">
           <Table>
             <TableHeader>
               <TableRow>
@@ -150,6 +153,57 @@ export default async function GroupsPage({ searchParams }: PageProps) {
               )}
             </TableBody>
           </Table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-3">
+          {groups.length === 0 ? (
+            <Card>
+              <CardContent className="py-8 text-center text-sm text-muted-foreground">
+                No groups yet. Create your first group to get started.
+              </CardContent>
+            </Card>
+          ) : (
+            groups.map((group) => (
+              <Card key={group.id}>
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <Link
+                        href={`/groups/${group.id}`}
+                        className="font-medium text-base hover:text-primary"
+                      >
+                        {group.name}
+                      </Link>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Submissions: {group._count.submissions}{group.expectedSize ? `/${group.expectedSize}` : ""}
+                      </p>
+                    </div>
+                    <StatusIcons
+                      paid={group.paid}
+                      pickedUp={group.pickedUp}
+                      returned={group.returned}
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <code className="text-xs bg-muted px-2 py-1 rounded block w-fit">
+                      /group/{group.slug}
+                    </code>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Link href={`/groups/${group.id}`} className="flex-1">
+                      <Button variant="outline" size="sm" className="w-full">
+                        View Details
+                      </Button>
+                    </Link>
+                    <ArchiveGroupButton groupId={group.id} groupName={group.name} />
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
         </div>
       </div>
     </div>

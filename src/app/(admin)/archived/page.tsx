@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import prisma from "@/lib/db";
 import Link from "next/link";
@@ -36,8 +37,9 @@ export default async function ArchivedPage() {
         description="Completed rentals and past groups"
       />
 
-      <div className="p-6">
-        <div className="rounded-lg border border-border bg-white">
+      <div className="p-4 sm:p-6">
+        {/* Desktop Table View */}
+        <div className="hidden md:block rounded-lg border border-border bg-white">
           <Table>
             <TableHeader>
               <TableRow>
@@ -91,6 +93,53 @@ export default async function ArchivedPage() {
               )}
             </TableBody>
           </Table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-3">
+          {groups.length === 0 ? (
+            <Card>
+              <CardContent className="py-8 text-center text-sm text-muted-foreground">
+                No archived groups yet.
+              </CardContent>
+            </Card>
+          ) : (
+            groups.map((group) => (
+              <Card key={group.id}>
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <Link
+                        href={`/groups/${group.id}`}
+                        className="font-medium text-base hover:text-primary"
+                      >
+                        {group.name}
+                      </Link>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Submissions: {group._count.submissions}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Archived: {new Date(group.updatedAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <StatusIcons
+                      paid={group.paid}
+                      pickedUp={group.pickedUp}
+                      returned={group.returned}
+                    />
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Link href={`/groups/${group.id}`} className="w-full">
+                      <Button variant="outline" size="sm" className="w-full">
+                        View Details
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
         </div>
       </div>
     </div>

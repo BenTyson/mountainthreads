@@ -84,7 +84,7 @@ export function EditGroupButton({ group }: EditGroupButtonProps) {
           Edit
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="w-full h-full sm:h-auto sm:max-w-[500px] sm:rounded-lg overflow-y-auto">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Edit Group</DialogTitle>
