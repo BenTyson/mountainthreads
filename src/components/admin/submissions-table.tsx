@@ -47,11 +47,16 @@ import {
   JACKET_SIZES,
   PANT_SIZES,
   BIB_SIZES,
+  TODDLER_SET_SIZES,
+  HANDWEAR_TYPES,
   GLOVE_SIZES,
   GOGGLE_OPTIONS,
   HELMET_SIZES,
+  YOUTH_HELMET_KID_SIZES,
+  YOUTH_HELMET_ADULT_SIZES,
   YOUTH_GENDERS,
   usesPants,
+  hasHandwearChoice,
   type ClothingType,
 } from "@/lib/form-options";
 import type { FormSubmission } from "@/lib/types";
@@ -72,7 +77,9 @@ const fieldLabels: Record<string, string> = {
   jacketSize: "Jacket Size",
   pantSize: "Pant Size",
   bibSize: "Bib Size",
-  gloveSize: "Glove Size",
+  toddlerSetSize: "Toddler Set Size",
+  handwearType: "Gloves/Mittens",
+  gloveSize: "Glove/Mitten Size",
   goggles: "Goggles",
   helmetSize: "Helmet Size",
   sizingNotes: "Sizing Notes",
@@ -97,6 +104,8 @@ const fieldOrder = [
   "jacketSize",
   "pantSize",
   "bibSize",
+  "toddlerSetSize",
+  "handwearType",
   "gloveSize",
   "goggles",
   "helmetSize",
@@ -127,6 +136,14 @@ function SubmissionDetail({ submission }: { submission: FormSubmission }) {
         girls: "Girls",
       };
       return genders[value as string] || String(value);
+    }
+    // Format handwear type
+    if (key === "handwearType") {
+      const options: Record<string, string> = {
+        gloves: "Gloves",
+        mittens: "Mittens",
+      };
+      return options[value as string] || String(value);
     }
     // Format goggles
     if (key === "goggles") {
@@ -169,6 +186,8 @@ function SubmissionDetail({ submission }: { submission: FormSubmission }) {
     "jacketSize",
     "pantSize",
     "bibSize",
+    "toddlerSetSize",
+    "handwearType",
     "gloveSize",
     "goggles",
     "helmetSize",
@@ -232,22 +251,48 @@ function SubmissionCard({
     ? `${data.firstName} ${data.lastName || ""}`
     : submission.email || "Anonymous";
 
+  const clothingTypes: Record<string, string> = {
+    mens: "Men's",
+    womens: "Women's",
+    youth: "Youth",
+    toddler: "Toddler",
+  };
+
+  const clothingType = data.clothingType
+    ? clothingTypes[data.clothingType as string] || String(data.clothingType)
+    : null;
+
+  // Build sizing summary
+  const sizingParts: string[] = [];
+  if (data.jacketSize) sizingParts.push(`Jacket: ${data.jacketSize}`);
+  if (data.toddlerSetSize) sizingParts.push(`Set: ${data.toddlerSetSize}`);
+  if (data.pantSize) sizingParts.push(`Pants: ${data.pantSize}`);
+  if (data.bibSize) sizingParts.push(`Bibs: ${data.bibSize}`);
+  if (data.shoeSize) sizingParts.push(`Shoe: ${data.shoeSize}`);
+  if (data.gloveSize) sizingParts.push(`Gloves: ${data.gloveSize}`);
+  if (data.helmetSize) sizingParts.push(`Helmet: ${data.helmetSize}`);
+
   return (
     <Card className="hover:border-primary/50 transition-colors">
       <CardContent className="p-4">
         <div className="flex justify-between items-start">
-          <div className="cursor-pointer" onClick={onView}>
+          <div className="cursor-pointer flex-1 min-w-0" onClick={onView}>
             <div className="flex items-center gap-2">
               <h4 className="font-medium">{name}</h4>
               {submission.isLeader && (
                 <Badge className="bg-primary text-xs">Leader</Badge>
               )}
             </div>
-            {submission.email && (
-              <p className="text-sm text-muted-foreground">{submission.email}</p>
+            {clothingType && (
+              <p className="text-sm text-muted-foreground mt-1">{clothingType}</p>
+            )}
+            {sizingParts.length > 0 && (
+              <p className="text-xs text-muted-foreground mt-1 truncate">
+                {sizingParts.join(" • ")}
+              </p>
             )}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-shrink-0">
             <Button variant="ghost" size="sm" onClick={onView} title="View details">
               <Eye className="h-4 w-4" />
             </Button>
@@ -279,8 +324,9 @@ function EditSubmissionForm({
 }) {
   const clothingType = (editData.clothingType as ClothingType) || "mens";
   const showPants = clothingType && usesPants(clothingType);
-  const showBibs = clothingType && !usesPants(clothingType);
+  const showBibs = clothingType === "youth"; // Only youth gets bibs
   const isYouth = clothingType === "youth";
+  const isToddler = clothingType === "toddler";
 
   const updateField = (field: string, value: string) => {
     setEditData({ ...editData, [field]: value });
@@ -347,26 +393,47 @@ function EditSubmissionForm({
         </div>
       </div>
 
-      {/* Jacket & Shoe */}
+      {/* Jacket/Toddler Set & Shoe */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Jacket Size</Label>
-          <Select
-            value={(editData.jacketSize as string) || ""}
-            onValueChange={(v) => updateField("jacketSize", v)}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select size" />
-            </SelectTrigger>
-            <SelectContent>
-              {JACKET_SIZES.map((size) => (
-                <SelectItem key={size} value={size}>
-                  {size}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {isToddler ? (
+          <div className="space-y-2">
+            <Label>Toddler Set Size <span className="text-muted-foreground font-normal">(Jacket & Bibs)</span></Label>
+            <Select
+              value={(editData.toddlerSetSize as string) || ""}
+              onValueChange={(v) => updateField("toddlerSetSize", v)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select size" />
+              </SelectTrigger>
+              <SelectContent>
+                {TODDLER_SET_SIZES.map((size) => (
+                  <SelectItem key={size} value={size}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <Label>Jacket Size</Label>
+            <Select
+              value={(editData.jacketSize as string) || ""}
+              onValueChange={(v) => updateField("jacketSize", v)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select size" />
+              </SelectTrigger>
+              <SelectContent>
+                {JACKET_SIZES[clothingType]?.map((size) => (
+                  <SelectItem key={size} value={size}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         <div className="space-y-2">
           <Label>Shoe Size</Label>
           <Select
@@ -390,7 +457,7 @@ function EditSubmissionForm({
       {/* Pants/Bibs & Gloves */}
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>{showBibs ? "Bib Size" : "Pant Size"}</Label>
+          <Label>{showBibs ? "Bib Size" : showPants ? "Pant Size" : "—"}</Label>
           {showPants && (
             <Select
               value={(editData.pantSize as string) || ""}
@@ -400,7 +467,7 @@ function EditSubmissionForm({
                 <SelectValue placeholder="Select size" />
               </SelectTrigger>
               <SelectContent>
-                {PANT_SIZES.map((size) => (
+                {PANT_SIZES[clothingType as "mens" | "womens"]?.map((size) => (
                   <SelectItem key={size} value={size}>
                     {size}
                   </SelectItem>
@@ -417,35 +484,82 @@ function EditSubmissionForm({
                 <SelectValue placeholder="Select size" />
               </SelectTrigger>
               <SelectContent>
-                {(clothingType === "youth" || clothingType === "toddler") &&
-                  BIB_SIZES[clothingType]?.map((size) => (
-                    <SelectItem key={size} value={size}>
-                      {size}
-                    </SelectItem>
-                  ))}
+                {BIB_SIZES.youth.map((size) => (
+                  <SelectItem key={size} value={size}>
+                    {size}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           )}
+          {isToddler && (
+            <p className="text-xs text-muted-foreground">Bibs included in Toddler Set</p>
+          )}
         </div>
-        <div className="space-y-2">
-          <Label>Glove Size</Label>
-          <Select
-            value={(editData.gloveSize as string) || ""}
-            onValueChange={(v) => updateField("gloveSize", v)}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select size" />
-            </SelectTrigger>
-            <SelectContent>
-              {clothingType && GLOVE_SIZES[clothingType]?.map((size) => (
-                <SelectItem key={size} value={size}>
-                  {size}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {hasHandwearChoice(clothingType) ? (
+          <div className="space-y-2">
+            <Label>Gloves or Mittens?</Label>
+            <Select
+              value={(editData.handwearType as string) || ""}
+              onValueChange={(v) => updateField("handwearType", v)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                {HANDWEAR_TYPES.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <Label>Glove Size</Label>
+            <Select
+              value={(editData.gloveSize as string) || ""}
+              onValueChange={(v) => updateField("gloveSize", v)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select size" />
+              </SelectTrigger>
+              <SelectContent>
+                {clothingType && GLOVE_SIZES[clothingType]?.map((size) => (
+                  <SelectItem key={size} value={size}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
+
+      {/* Glove/Mitten Size (Women/Youth only - after type selection) */}
+      {hasHandwearChoice(clothingType) && (
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>{editData.handwearType === "mittens" ? "Mitten Size" : "Glove Size"}</Label>
+            <Select
+              value={(editData.gloveSize as string) || ""}
+              onValueChange={(v) => updateField("gloveSize", v)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select size" />
+              </SelectTrigger>
+              <SelectContent>
+                {clothingType && GLOVE_SIZES[clothingType]?.map((size) => (
+                  <SelectItem key={size} value={size}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      )}
 
       {/* Helmet & Goggles */}
       <div className="grid grid-cols-2 gap-4">
@@ -459,11 +573,32 @@ function EditSubmissionForm({
               <SelectValue placeholder="Select size" />
             </SelectTrigger>
             <SelectContent>
-              {clothingType && HELMET_SIZES[clothingType]?.map((size) => (
-                <SelectItem key={size} value={size}>
-                  {size}
-                </SelectItem>
-              ))}
+              {isYouth ? (
+                <>
+                  <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                    Kid Helmets
+                  </div>
+                  {YOUTH_HELMET_KID_SIZES.map((size) => (
+                    <SelectItem key={`kid-${size}`} value={`kid-${size}`}>
+                      {size}
+                    </SelectItem>
+                  ))}
+                  <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                    Adult Helmets
+                  </div>
+                  {YOUTH_HELMET_ADULT_SIZES.map((size) => (
+                    <SelectItem key={`adult-${size}`} value={`adult-${size}`}>
+                      {size}
+                    </SelectItem>
+                  ))}
+                </>
+              ) : (
+                clothingType && HELMET_SIZES[clothingType]?.map((size) => (
+                  <SelectItem key={size} value={size}>
+                    {size}
+                  </SelectItem>
+                ))
+              )}
             </SelectContent>
           </Select>
         </div>

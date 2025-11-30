@@ -29,33 +29,56 @@ export function getSizingLabel(clothingType: ClothingType, gender?: YouthGender)
   return "";
 }
 
-// Shoe sizes by clothing type
+// Shoe sizes by clothing type (boot sizes - whole sizes only)
 export const SHOE_SIZES: Record<ClothingType, string[]> = {
-  mens: ["7", "7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12", "12.5", "13", "14", "15"],
-  womens: ["5", "5.5", "6", "6.5", "7", "7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
-  youth: ["1", "1.5", "2", "2.5", "3", "3.5", "4", "4.5", "5", "5.5", "6", "6.5", "7"],
-  toddler: ["4", "5", "6", "7", "8", "9", "10", "11", "12", "13"],
+  mens: ["7", "8", "9", "10", "11", "12", "13", "14", "15"],
+  womens: ["6", "7", "8", "9", "10", "11"],
+  youth: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"],
+  toddler: ["5T", "6T", "7T", "8T", "9T", "10T"],
 };
 
-// Jacket sizes (same for all)
-export const JACKET_SIZES = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL", "Other"];
-
-// Pant sizes (only for men's and women's)
-export const PANT_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
-
-// Bib sizes (only for youth and toddler)
-export const BIB_SIZES: Record<"youth" | "toddler", string[]> = {
+// Jacket sizes by clothing type
+export const JACKET_SIZES: Record<ClothingType, string[]> = {
+  mens: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"],
+  womens: ["S", "M", "L", "XL", "2XL", "3XL"],
   youth: ["XS", "S", "M", "L", "XL"],
-  toddler: ["2T", "3T", "4T", "5T/XXS"],
+  toddler: ["XS", "S", "M", "L", "XL"],
 };
 
-// Glove sizes by clothing type
-export const GLOVE_SIZES: Record<ClothingType, string[]> = {
-  mens: ["S", "M", "L", "XL", "Custom Size"],
-  womens: ["S", "M", "L", "Custom Size"],
-  youth: ["S", "M", "L", "Custom Size"],
-  toddler: ["S", "M", "L", "Custom Size"],
+// Pant sizes by clothing type (only for men's and women's)
+export const PANT_SIZES: Record<"mens" | "womens", string[]> = {
+  mens: ["S", "M", "L", "XL", "XXL", "2XL", "3XL", "4XL", "5XL", "Custom Size"],
+  womens: ["XS", "S", "M", "L", "XL", "2XL", "3XL", "Custom Size"],
 };
+
+// Bib sizes (only for youth)
+export const BIB_SIZES: Record<"youth", string[]> = {
+  youth: ["XS", "S", "M", "L", "XL"],
+};
+
+// Toddler Set sizes (combined jacket & bib)
+export const TODDLER_SET_SIZES = ["12MO", "2T", "3T", "4T", "XXS"];
+
+// Glove/Mitten type options (for women's and youth only)
+export const HANDWEAR_TYPES = [
+  { value: "gloves", label: "Gloves" },
+  { value: "mittens", label: "Mittens" },
+] as const;
+
+export type HandwearType = (typeof HANDWEAR_TYPES)[number]["value"];
+
+// Glove/Mitten sizes by clothing type
+export const GLOVE_SIZES: Record<ClothingType, string[]> = {
+  mens: ["S", "M", "L", "XL"],
+  womens: ["S", "M", "L"],
+  youth: ["S", "M", "L", "XL"],
+  toddler: ["S", "M", "L", "XL"],
+};
+
+// Helper to check if clothing type can choose between gloves/mittens
+export function hasHandwearChoice(clothingType: ClothingType): boolean {
+  return clothingType === "womens" || clothingType === "youth";
+}
 
 // Goggle options
 export const GOGGLE_OPTIONS = [
@@ -67,9 +90,13 @@ export const GOGGLE_OPTIONS = [
 export const HELMET_SIZES: Record<ClothingType, string[]> = {
   mens: ["S", "M", "L", "XL"],
   womens: ["S", "M", "L", "XL"],
-  youth: ["XS", "S"],
+  youth: ["XS", "S", "S", "M", "L", "XL"], // First XS, S are kid sizes; second S, M, L, XL are adult sizes
   toddler: ["XS"],
 };
+
+// Youth helmet has two sections - kid and adult sizes
+export const YOUTH_HELMET_KID_SIZES = ["XS", "S"];
+export const YOUTH_HELMET_ADULT_SIZES = ["S", "M", "L", "XL"];
 
 // Payment options
 export const PAYMENT_OPTIONS = [

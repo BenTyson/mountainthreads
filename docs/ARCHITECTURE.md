@@ -118,6 +118,8 @@ Form submissions use a flexible JSON structure:
   "jacketSize": "L",
   "pantSize": "M",
   "bibSize": "",
+  "toddlerSetSize": "",
+  "handwearType": "gloves",
   "gloveSize": "L",
   "goggles": "standard",
   "helmetSize": "M",
@@ -131,12 +133,15 @@ Form submissions use a flexible JSON structure:
 
 ### Clothing Types & Conditional Fields
 
-| Type | Gender Required | Bottom Wear | Sizes |
-|------|-----------------|-------------|-------|
-| Men's | No | Pants | US Men's |
-| Women's | No | Pants | US Women's |
-| Youth | Yes (Boys/Girls) | Bibs | Youth |
-| Toddler | No | Bibs (gender neutral) | Toddler |
+| Type | Gender Required | Upper Wear | Bottom Wear | Gloves/Mittens |
+|------|-----------------|------------|-------------|----------------|
+| Men's | No | Jacket (S-4XL) | Pants | Gloves only |
+| Women's | No | Jacket (S-3XL) | Pants | Choice |
+| Youth | Yes (Boys/Girls) | Jacket (XS-XL) | Bibs | Choice |
+| Toddler | No | Toddler Set (12MO-XXS) | (included in set) | Gloves only |
+
+### Youth Helmet Sizes
+Youth has sectioned helmet dropdown with both kid sizes (XS, S) and adult sizes (S-XL) for larger kids.
 
 ## Authentication Strategy
 

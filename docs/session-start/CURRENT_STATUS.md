@@ -1,6 +1,6 @@
 # Current Project Status
 
-> Last updated: Session 006 (Nov 26, 2025)
+> Last updated: Session 007 (Nov 30, 2025)
 
 ## Current Branch: `staging`
 
@@ -124,10 +124,37 @@
 - Removed asterisks from optional field labels
 - Added "(optional)" placeholder text where appropriate
 
+### Phase 12: Form Options Overhaul ✅
+- **Boot Sizes (whole sizes only):**
+  - Men's: 7-15
+  - Women's: 6-11
+  - Youth: 1-13
+  - Toddler: 5T-10T
+- **Pant Sizes:**
+  - Men's: S-5XL + XXL + Custom Size (XXL and 2XL both included for brand differences)
+  - Women's: XS-3XL + Custom Size
+- **Jacket Sizes:**
+  - Men's: S-4XL
+  - Women's: S-3XL
+  - Youth: XS-XL
+- **Toddler Set (replaces separate Jacket & Bib for toddlers):**
+  - Combined "Toddler Set Size (Jacket & Bibs)" field
+  - Sizes: 12MO, 2T, 3T, 4T, XXS
+- **Gloves/Mittens:**
+  - Women's & Youth: Choice between Gloves or Mittens (same sizes)
+  - Men's & Toddler: Gloves only
+  - Sizes: Men's S-XL, Women's S-L, Youth S-XL, Toddler S-XL
+- **Youth Helmet Sizes:**
+  - Sectioned dropdown with "Kid Helmets" (XS, S) and "Adult Helmets" (S-XL)
+  - Allows larger kids to select adult helmet sizes
+- **Card View Enhancement:**
+  - Submission cards now show clothing type and sizing summary
+  - Displays: Jacket, Set, Pants, Bibs, Shoe, Gloves, Helmet
+
 ## What's Next
 
-1. **Phase 12: Testing** - Unit, integration, E2E
-2. **Phase 13: Production Hardening** - Monitoring, security audit, error tracking
+1. **Phase 13: Testing** - Unit, integration, E2E
+2. **Phase 14: Production Hardening** - Monitoring, security audit, error tracking
 
 ## Quick Commands
 
@@ -173,10 +200,12 @@ git push           # Auto-deploys to staging
 | Field | Men's | Women's | Youth | Toddler |
 |-------|-------|---------|-------|---------|
 | Gender | - | - | ✅ | - |
-| Shoe Size | ✅ | ✅ | ✅ | ✅ |
-| Jacket Size | ✅ | ✅ | ✅ | ✅ |
-| Pant Size | ✅ | ✅ | - | - |
-| Bib Size | - | - | ✅ | ✅ |
-| Glove Size | ✅ | ✅ | ✅ | ✅ |
+| Boot Size | 7-15 | 6-11 | 1-13 | 5T-10T |
+| Jacket Size | S-4XL | S-3XL | XS-XL | - |
+| Toddler Set | - | - | - | 12MO-XXS |
+| Pant Size | S-5XL | XS-3XL | - | - |
+| Bib Size | - | - | XS-XL | - |
+| Gloves/Mittens | Gloves only | Choice | Choice | Gloves only |
+| Glove Size | S-XL | S-L | S-XL | S-XL |
 | Goggles | ✅ | ✅ | ✅ | ✅ |
-| Helmet Size | ✅ | ✅ | ✅ | ✅ |
+| Helmet Size | S-XL | S-XL | Kid/Adult | XS |
