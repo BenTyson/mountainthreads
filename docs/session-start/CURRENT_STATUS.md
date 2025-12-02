@@ -1,6 +1,6 @@
 # Current Project Status
 
-> Last updated: Session 007 (Nov 30, 2025)
+> Last updated: Session 008 (Dec 2, 2025)
 
 ## Current Branch: `staging`
 
@@ -151,10 +151,28 @@
   - Submission cards now show clothing type and sizing summary
   - Displays: Jacket, Set, Pants, Bibs, Shoe, Gloves, Helmet
 
+### Phase 13: Form UI & Size Guides ✅
+- **Form Field Reorganization:**
+  - Renamed "Shoe Size" to "Boot Size" throughout
+  - Moved Boot Size to be the last sizing field (after Helmet)
+  - Added "Please select those that apply" disclaimer under Sizing Information header
+  - Reorganized field layout to eliminate empty gaps in 2-column grid:
+    - Men's/Women's: Jacket+Pant, Glove+Helmet, Goggles+Boot
+    - Youth: Jacket+Bib, Gloves/Mittens?+Size, Goggles+Helmet, Boot
+    - Toddler: Set, Gloves/Mittens?+Size, Goggles+Helmet, Boot
+- **New Size Guides:**
+  - Men's Gloves: Circumference, Length, Width for S-XL
+  - Women's Gloves/Mittens: Circumference, Length, Width for S-L
+  - Kids Gloves/Mittens: Age, Circumference, Length for XS-XL
+  - Helmet (universal): Inches, Hat Size for S-XL
+- **Size Guide Buttons Added:**
+  - Glove Size field now has (?) help icon for all clothing types
+  - Helmet Size field now has (?) help icon for all clothing types
+
 ## What's Next
 
-1. **Phase 13: Testing** - Unit, integration, E2E
-2. **Phase 14: Production Hardening** - Monitoring, security audit, error tracking
+1. **Phase 14: Testing** - Unit, integration, E2E
+2. **Phase 15: Production Hardening** - Monitoring, security audit, error tracking
 
 ## Quick Commands
 
@@ -200,12 +218,14 @@ git push           # Auto-deploys to staging
 | Field | Men's | Women's | Youth | Toddler |
 |-------|-------|---------|-------|---------|
 | Gender | - | - | ✅ | - |
-| Boot Size | 7-15 | 6-11 | 1-13 | 5T-10T |
-| Jacket Size | S-4XL | S-3XL | XS-XL | - |
+| Jacket Size | S-4XL (?) | S-3XL (?) | XS-XL | - |
 | Toddler Set | - | - | - | 12MO-XXS |
-| Pant Size | S-5XL | XS-3XL | - | - |
+| Pant Size | S-5XL (?) | XS-3XL (?) | - | - |
 | Bib Size | - | - | XS-XL | - |
 | Gloves/Mittens | Gloves only | Choice | Choice | Gloves only |
-| Glove Size | S-XL | S-L | S-XL | S-XL |
+| Glove Size | S-XL (?) | S-L (?) | S-XL (?) | S-XL |
 | Goggles | ✅ | ✅ | ✅ | ✅ |
-| Helmet Size | S-XL | S-XL | Kid/Adult | XS |
+| Helmet Size | S-XL (?) | S-XL (?) | Kid/Adult (?) | XS |
+| Boot Size | 7-15 | 6-11 | 1-13 | 5T-10T |
+
+(?) = Size guide available via help icon

@@ -137,3 +137,10 @@
 - Implemented conditional sizing fields
 - Added gender selection for youth
 - Added sizing labels to all dropdowns
+
+### Session 008 (Dec 2, 2025)
+- Renamed "Shoe Size" to "Boot Size" throughout forms
+- Added "Please select those that apply" disclaimer under Sizing Information
+- Reorganized form field layout to eliminate empty gaps in 2-column grid
+- Added new size guides: Men's Gloves, Women's Gloves/Mittens, Kids Gloves/Mittens, Helmet
+- Added size guide (?) buttons to Glove Size and Helmet Size fields

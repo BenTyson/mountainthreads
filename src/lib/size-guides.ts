@@ -1,10 +1,9 @@
 // Size guide data from mountainthreads.com/page/apparel_size_guides
 
-export type SizeGuideItem = "jacket" | "pants";
-export type SizeGuideClothingType = "mens" | "womens";
+export type SizeGuideItem = "jacket" | "pants" | "gloves" | "helmet";
+export type SizeGuideClothingType = "mens" | "womens" | "youth";
 
 export interface SizeGuideRow {
-  size: string;
   [key: string]: string;
 }
 
@@ -90,27 +89,102 @@ const womensPants: SizeGuide = {
   ],
 };
 
+// Men's Gloves
+const mensGloves: SizeGuide = {
+  title: "Men's Glove Size Guide",
+  columns: [
+    { key: "measurement", label: "" },
+    { key: "S", label: "Small" },
+    { key: "M", label: "Medium" },
+    { key: "L", label: "Large" },
+    { key: "XL", label: "XL" },
+  ],
+  rows: [
+    { measurement: "Circumference (in)", S: "7.5-8", M: "8-8.5", L: "8.5-9", XL: "9-10" },
+    { measurement: "Length (in)", S: "6.9-7.5", M: "7.3-7.9", L: "7.7-8.3", XL: "8.1-8.7" },
+    { measurement: "Width (in)", S: "3.1", M: "3.1", L: "3.5", XL: "3.9" },
+  ],
+};
+
+// Women's Gloves
+const womensGloves: SizeGuide = {
+  title: "Women's Glove/Mitten Size Guide",
+  columns: [
+    { key: "measurement", label: "" },
+    { key: "S", label: "Small" },
+    { key: "M", label: "Medium" },
+    { key: "L", label: "Large" },
+  ],
+  rows: [
+    { measurement: "Circumference (in)", S: "6.5-7", M: "7-7.5", L: "7.5-8" },
+    { measurement: "Length (in)", S: "6.1-6.7", M: "6.5-7.1", L: "6.9-7.5" },
+    { measurement: "Width (in)", S: "2.7", M: "2.7", L: "3.1" },
+  ],
+};
+
+// Youth/Kids Gloves
+const youthGloves: SizeGuide = {
+  title: "Kids Glove/Mitten Size Guide",
+  columns: [
+    { key: "measurement", label: "" },
+    { key: "XS", label: "XS" },
+    { key: "S", label: "Small" },
+    { key: "M", label: "Medium" },
+    { key: "L", label: "Large" },
+    { key: "XL", label: "XL" },
+  ],
+  rows: [
+    { measurement: "Age", XS: "Under 5", S: "6", M: "7-8", L: "9-10", XL: "11-12" },
+    { measurement: "Circumference (in)", XS: "4.5-5", S: "5-5.5", M: "5.5-6", L: "6-6.5", XL: "6.5-7" },
+    { measurement: "Length (in)", XS: "4.5-5.1", S: "4.9-5.5", M: "5.3-5.9", L: "5.7-6.3", XL: "6.1-6.7" },
+  ],
+};
+
+// Helmet Size Guide (universal)
+const helmetGuide: SizeGuide = {
+  title: "Helmet Size Guide",
+  columns: [
+    { key: "measurement", label: "" },
+    { key: "S", label: "Small" },
+    { key: "M", label: "Medium" },
+    { key: "L", label: "Large" },
+    { key: "XL", label: "XL" },
+  ],
+  rows: [
+    { measurement: "In Inches", S: "19-20½", M: "20½-23", L: "22-24", XL: "23⅗-24⅘" },
+    { measurement: "Hat Size", S: "6-6¾", M: "6¾-7⅜", L: "7⅛-7⅝", XL: "7½-8" },
+  ],
+};
+
 // Size guide lookup map
-const sizeGuides: Record<SizeGuideClothingType, Record<SizeGuideItem, SizeGuide>> = {
+const sizeGuides: Record<SizeGuideClothingType, Partial<Record<SizeGuideItem, SizeGuide>>> = {
   mens: {
     jacket: mensJackets,
     pants: mensPants,
+    gloves: mensGloves,
+    helmet: helmetGuide,
   },
   womens: {
     jacket: womensJackets,
     pants: womensPants,
+    gloves: womensGloves,
+    helmet: helmetGuide,
+  },
+  youth: {
+    gloves: youthGloves,
+    helmet: helmetGuide,
   },
 };
 
 /**
  * Get the size guide for a specific clothing type and item
- * Returns undefined if no guide exists (e.g., youth, toddler, or other items)
+ * Returns undefined if no guide exists (e.g., toddler or other items without guides)
  */
 export function getSizeGuide(
   clothingType: string,
   item: SizeGuideItem
 ): SizeGuide | undefined {
-  if (clothingType !== "mens" && clothingType !== "womens") {
+  if (clothingType !== "mens" && clothingType !== "womens" && clothingType !== "youth") {
     return undefined;
   }
   return sizeGuides[clothingType]?.[item];

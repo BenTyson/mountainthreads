@@ -191,6 +191,9 @@ export function MemberFields({
         <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
           Sizing Information
         </p>
+        <p className="text-sm text-muted-foreground -mt-2">
+          Please select those that apply
+        </p>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label>Clothing Type</Label>
@@ -229,25 +232,8 @@ export function MemberFields({
 
         {showSizingFields && (
           <>
+            {/* Row 1: Jacket + Pant (mens/womens) OR Jacket + Bib (youth) OR Toddler Set alone */}
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Shoe Size</Label>
-                <Select value={data.shoeSize} onValueChange={(v) => update("shoeSize", v)}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                      {sizingLabel}
-                    </div>
-                    {SHOE_SIZES[clothingType].map((size) => (
-                      <SelectItem key={size} value={size}>
-                        {size}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
               {!isToddler && (
                 <div className="space-y-2">
                   <Label className="inline-flex items-center">
@@ -291,9 +277,6 @@ export function MemberFields({
                   </Select>
                 </div>
               )}
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
               {showPants && (
                 <div className="space-y-2">
                   <Label className="inline-flex items-center">
@@ -337,67 +320,98 @@ export function MemberFields({
                   </Select>
                 </div>
               )}
+            </div>
+
+            {/* Row 2: Gloves - either choice+size (youth/toddler) or just size+helmet (mens/womens) */}
+            <div className="grid gap-4 sm:grid-cols-2">
               {hasHandwearChoice(clothingType) ? (
-                <div className="space-y-2">
-                  <Label>Gloves or Mittens?</Label>
-                  <Select value={data.handwearType} onValueChange={(v) => update("handwearType", v)}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {HANDWEAR_TYPES.map((type) => (
-                        <SelectItem key={type.value} value={type.value}>
-                          {type.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <>
+                  <div className="space-y-2">
+                    <Label>Gloves or Mittens?</Label>
+                    <Select value={data.handwearType} onValueChange={(v) => update("handwearType", v)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {HANDWEAR_TYPES.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="inline-flex items-center">
+                      {data.handwearType === "mittens" ? "Mitten Size" : "Glove Size"}
+                      <SizeGuideButton clothingType={clothingType} item="gloves" />
+                    </Label>
+                    <Select value={data.gloveSize} onValueChange={(v) => update("gloveSize", v)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                          {sizingLabel}
+                        </div>
+                        {GLOVE_SIZES[clothingType].map((size) => (
+                          <SelectItem key={size} value={size}>
+                            {size}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
               ) : (
-                <div className="space-y-2">
-                  <Label>Glove Size</Label>
-                  <Select value={data.gloveSize} onValueChange={(v) => update("gloveSize", v)}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select size" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                        {sizingLabel}
-                      </div>
-                      {GLOVE_SIZES[clothingType].map((size) => (
-                        <SelectItem key={size} value={size}>
-                          {size}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <>
+                  <div className="space-y-2">
+                    <Label className="inline-flex items-center">
+                      Glove Size
+                      <SizeGuideButton clothingType={clothingType} item="gloves" />
+                    </Label>
+                    <Select value={data.gloveSize} onValueChange={(v) => update("gloveSize", v)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                          {sizingLabel}
+                        </div>
+                        {GLOVE_SIZES[clothingType].map((size) => (
+                          <SelectItem key={size} value={size}>
+                            {size}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="inline-flex items-center">
+                      Helmet Size
+                      <SizeGuideButton clothingType={clothingType} item="helmet" />
+                    </Label>
+                    <Select value={data.helmetSize} onValueChange={(v) => update("helmetSize", v)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                          {sizingLabel}
+                        </div>
+                        {HELMET_SIZES[clothingType].map((size) => (
+                          <SelectItem key={size} value={size}>
+                            {size}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
               )}
             </div>
 
-            {hasHandwearChoice(clothingType) && (
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>{data.handwearType === "mittens" ? "Mitten Size" : "Glove Size"}</Label>
-                  <Select value={data.gloveSize} onValueChange={(v) => update("gloveSize", v)}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select size" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                        {sizingLabel}
-                      </div>
-                      {GLOVE_SIZES[clothingType].map((size) => (
-                        <SelectItem key={size} value={size}>
-                          {size}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            )}
-
+            {/* Row 3: Goggles + Boot Size (mens/womens) OR Goggles + Helmet Size (youth/toddler) */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label>Goggles</Label>
@@ -414,48 +428,96 @@ export function MemberFields({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label>Helmet Size</Label>
-                <Select value={data.helmetSize} onValueChange={(v) => update("helmetSize", v)}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {isYouth ? (
-                      <>
-                        <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                          Kid Helmets
-                        </div>
-                        {YOUTH_HELMET_KID_SIZES.map((size) => (
-                          <SelectItem key={`kid-${size}`} value={`kid-${size}`}>
-                            {size}
-                          </SelectItem>
-                        ))}
-                        <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                          Adult Helmets
-                        </div>
-                        {YOUTH_HELMET_ADULT_SIZES.map((size) => (
-                          <SelectItem key={`adult-${size}`} value={`adult-${size}`}>
-                            {size}
-                          </SelectItem>
-                        ))}
-                      </>
-                    ) : (
-                      <>
-                        <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                          {sizingLabel}
-                        </div>
-                        {HELMET_SIZES[clothingType].map((size) => (
-                          <SelectItem key={size} value={size}>
-                            {size}
-                          </SelectItem>
-                        ))}
-                      </>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
+              {hasHandwearChoice(clothingType) ? (
+                <div className="space-y-2">
+                  <Label className="inline-flex items-center">
+                    Helmet Size
+                    <SizeGuideButton clothingType={clothingType} item="helmet" />
+                  </Label>
+                  <Select value={data.helmetSize} onValueChange={(v) => update("helmetSize", v)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {isYouth ? (
+                        <>
+                          <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                            Kid Helmets
+                          </div>
+                          {YOUTH_HELMET_KID_SIZES.map((size) => (
+                            <SelectItem key={`kid-${size}`} value={`kid-${size}`}>
+                              {size}
+                            </SelectItem>
+                          ))}
+                          <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                            Adult Helmets
+                          </div>
+                          {YOUTH_HELMET_ADULT_SIZES.map((size) => (
+                            <SelectItem key={`adult-${size}`} value={`adult-${size}`}>
+                              {size}
+                            </SelectItem>
+                          ))}
+                        </>
+                      ) : (
+                        <>
+                          <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                            {sizingLabel}
+                          </div>
+                          {HELMET_SIZES[clothingType].map((size) => (
+                            <SelectItem key={size} value={size}>
+                              {size}
+                            </SelectItem>
+                          ))}
+                        </>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Label>Boot Size</Label>
+                  <Select value={data.shoeSize} onValueChange={(v) => update("shoeSize", v)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                        {sizingLabel}
+                      </div>
+                      {SHOE_SIZES[clothingType].map((size) => (
+                        <SelectItem key={size} value={size}>
+                          {size}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
+
+            {/* Row 4: Boot Size - only for youth/toddler (mens/womens have it paired with goggles above) */}
+            {hasHandwearChoice(clothingType) && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Boot Size</Label>
+                  <Select value={data.shoeSize} onValueChange={(v) => update("shoeSize", v)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                        {sizingLabel}
+                      </div>
+                      {SHOE_SIZES[clothingType].map((size) => (
+                        <SelectItem key={size} value={size}>
+                          {size}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
           </>
         )}
 
