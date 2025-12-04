@@ -4,7 +4,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle, Plus } from "lucide-react";
+import { CheckCircle, Plus, HelpCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { MemberFields, MemberData, emptyMemberData } from "./member-fields";
 
 interface LeaderFormProps {
@@ -23,6 +29,7 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
   const [rentalEndDate, setRentalEndDate] = useState("");
   const [skiResort, setSkiResort] = useState("");
   const [crewName, setCrewName] = useState("");
+  const [showCrewInfo, setShowCrewInfo] = useState(false);
 
   // Leader's own sizing data (pre-filled with name/email if available)
   const [leaderData, setLeaderData] = useState<MemberData>({
@@ -162,7 +169,19 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
             />
           </div>
           <div className="space-y-2">
-            <Label>Crew Name</Label>
+            <div className="flex items-center">
+              <Label>Crew Name</Label>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-5 w-5 p-0 ml-1 text-muted-foreground hover:text-foreground"
+                onClick={() => setShowCrewInfo(true)}
+                title="What's a crew?"
+              >
+                <HelpCircle className="h-4 w-4" />
+              </Button>
+            </div>
             <Input
               placeholder="e.g., Smith Family (optional)"
               value={crewName}
@@ -171,6 +190,38 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
           </div>
         </div>
       </div>
+
+      {/* Crew Info Dialog */}
+      <Dialog open={showCrewInfo} onOpenChange={setShowCrewInfo}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Groups vs Crews</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <div>
+              <p className="font-medium">What&apos;s a Group?</p>
+              <p className="text-muted-foreground">
+                A group is everyone traveling together on the same trip — like a scout troop,
+                school outing, or company retreat.
+              </p>
+            </div>
+            <div>
+              <p className="font-medium">What&apos;s a Crew?</p>
+              <p className="text-muted-foreground">
+                A crew is a smaller unit within a group — typically a family or group of friends
+                who pay together and want their gear packed in the same bag.
+              </p>
+            </div>
+            <div className="bg-muted p-3 rounded-lg">
+              <p className="text-muted-foreground">
+                <span className="font-medium text-foreground">Example:</span> A scout troop (the group)
+                might have several families (crews) traveling together. Each family fills out
+                their own crew form.
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Leader's Personal Info */}
       <div className="space-y-4">
@@ -216,10 +267,7 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
       )}
 
       <Button type="submit" className="w-full" size="lg" disabled={loading}>
-        {loading
-          ? "Submitting..."
-          : `Submit ${crewMembers.length > 0 ? `${crewMembers.length + 1} Forms` : "Form"}`
-        }
+        {loading ? "Submitting..." : "Submit Gear Specs"}
       </Button>
 
       <p className="text-xs text-center text-muted-foreground">
