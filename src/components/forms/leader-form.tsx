@@ -22,6 +22,7 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
   const [rentalStartDate, setRentalStartDate] = useState("");
   const [rentalEndDate, setRentalEndDate] = useState("");
   const [skiResort, setSkiResort] = useState("");
+  const [crewName, setCrewName] = useState("");
 
   // Leader's own sizing data (pre-filled with name/email if available)
   const [leaderData, setLeaderData] = useState<MemberData>({
@@ -31,21 +32,21 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
     email: leaderEmail || "",
   });
 
-  // Family members
-  const [familyMembers, setFamilyMembers] = useState<MemberData[]>([]);
+  // Crew members (previously called "family members")
+  const [crewMembers, setCrewMembers] = useState<MemberData[]>([]);
 
-  const addFamilyMember = () => {
-    setFamilyMembers([...familyMembers, { ...emptyMemberData }]);
+  const addCrewMember = () => {
+    setCrewMembers([...crewMembers, { ...emptyMemberData }]);
   };
 
-  const updateFamilyMember = (index: number, data: MemberData) => {
-    const newMembers = [...familyMembers];
+  const updateCrewMember = (index: number, data: MemberData) => {
+    const newMembers = [...crewMembers];
     newMembers[index] = data;
-    setFamilyMembers(newMembers);
+    setCrewMembers(newMembers);
   };
 
-  const removeFamilyMember = (index: number) => {
-    setFamilyMembers(familyMembers.filter((_, i) => i !== index));
+  const removeCrewMember = (index: number) => {
+    setCrewMembers(crewMembers.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,7 +55,7 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
     setError("");
 
     try {
-      // Submit leader's data (with rental details)
+      // Submit leader's data (with rental details) - this creates the crew
       const leaderResponse = await fetch("/api/submissions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -62,6 +63,8 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
           groupId,
           email: leaderData.email,
           isLeader: true,
+          isCrewLeader: true,
+          crewName: crewName || null,
           data: {
             ...leaderData,
             rentalStartDate,
@@ -75,8 +78,11 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
         throw new Error("Failed to submit leader form");
       }
 
-      // Submit each family member as a separate submission
-      for (const member of familyMembers) {
+      const leaderSubmission = await leaderResponse.json();
+      const crewId = leaderSubmission.crewId;
+
+      // Submit each crew member as a separate submission in the same crew
+      for (const member of crewMembers) {
         const response = await fetch("/api/submissions", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -84,12 +90,14 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
             groupId,
             email: member.email,
             isLeader: false,
+            crewId, // Assign to the same crew as the leader
+            paysSeparately: member.paysSeparately ?? false,
             data: member,
           }),
         });
 
         if (!response.ok) {
-          throw new Error("Failed to submit family member form");
+          throw new Error("Failed to submit crew member form");
         }
       }
 
@@ -144,13 +152,23 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
             />
           </div>
         </div>
-        <div className="space-y-2">
-          <Label>Ski Resort</Label>
-          <Input
-            placeholder="Enter the name of the ski resort (optional)"
-            value={skiResort}
-            onChange={(e) => setSkiResort(e.target.value)}
-          />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label>Ski Resort</Label>
+            <Input
+              placeholder="e.g., Park City, Deer Valley"
+              value={skiResort}
+              onChange={(e) => setSkiResort(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Crew Name</Label>
+            <Input
+              placeholder="e.g., Smith Family (optional)"
+              value={crewName}
+              onChange={(e) => setCrewName(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
@@ -164,19 +182,20 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
         />
       </div>
 
-      {/* Additional People */}
-      {familyMembers.length > 0 && (
+      {/* My Crew */}
+      {crewMembers.length > 0 && (
         <div className="space-y-4">
-          <h3 className="font-semibold text-lg">Additional People</h3>
-          {familyMembers.map((member, index) => (
+          <h3 className="font-semibold text-lg">My Crew</h3>
+          {crewMembers.map((member, index) => (
             <MemberFields
               key={index}
               data={member}
-              onChange={(data) => updateFamilyMember(index, data)}
-              onRemove={() => removeFamilyMember(index)}
+              onChange={(data) => updateCrewMember(index, data)}
+              onRemove={() => removeCrewMember(index)}
               showRemove={true}
-              title={`Additional Person ${index + 1}`}
+              title={`Crew Member ${index + 1}`}
               emailRequired={false}
+              isCrewMember={true}
             />
           ))}
         </div>
@@ -185,11 +204,11 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
       <Button
         type="button"
         variant="outline"
-        onClick={addFamilyMember}
+        onClick={addCrewMember}
         className="w-full"
       >
         <Plus className="mr-2 h-4 w-4" />
-        Add Additional Person
+        Add to My Crew
       </Button>
 
       {error && (
@@ -199,7 +218,7 @@ export function LeaderForm({ groupId, leaderName, leaderEmail }: LeaderFormProps
       <Button type="submit" className="w-full" size="lg" disabled={loading}>
         {loading
           ? "Submitting..."
-          : `Submit ${familyMembers.length > 0 ? `${familyMembers.length + 1} Forms` : "Form"}`
+          : `Submit ${crewMembers.length > 0 ? `${crewMembers.length + 1} Forms` : "Form"}`
         }
       </Button>
 

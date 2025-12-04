@@ -101,7 +101,7 @@ export const YOUTH_HELMET_ADULT_SIZES = ["S", "M", "L", "XL"];
 // Payment options
 export const PAYMENT_OPTIONS = [
   { value: "individually", label: "Individually" },
-  { value: "family", label: "For my family members" },
+  { value: "family", label: "For my crew" },
   { value: "entire-group", label: "For the entire group" },
   { value: "someone-else", label: "Someone else is paying for me" },
   { value: "not-sure", label: "I'm not sure" },

@@ -11,7 +11,17 @@ interface SubmissionData {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { groupId, email, isLeader = false, data } = body;
+    const {
+      groupId,
+      email,
+      isLeader = false,
+      data,
+      // Crew-related fields
+      crewId,
+      crewName,
+      isCrewLeader = false,
+      paysSeparately = false,
+    } = body;
 
     if (!groupId || !data) {
       return NextResponse.json(
@@ -57,11 +67,28 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // Handle crew assignment
+    let finalCrewId = crewId;
+
+    // If no crewId provided but we're creating a new submission, create a new crew
+    if (!finalCrewId && (isCrewLeader || crewName)) {
+      const crew = await prisma.crew.create({
+        data: {
+          groupId,
+          name: crewName || null,
+        },
+      });
+      finalCrewId = crew.id;
+    }
+
     const submission = await prisma.formSubmission.create({
       data: {
         groupId,
+        crewId: finalCrewId || null,
         email: email || null,
         isLeader,
+        isCrewLeader,
+        paysSeparately,
         data,
       },
     });

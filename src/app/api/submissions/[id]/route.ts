@@ -8,18 +8,35 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { data } = body;
+    const { data, crewId, paysSeparately } = body;
 
-    if (!data) {
+    // Build update object - only include fields that are provided
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updateData: Record<string, any> = {};
+
+    if (data !== undefined) {
+      updateData.data = data;
+    }
+
+    if (crewId !== undefined) {
+      // Allow setting to null to remove from crew
+      updateData.crewId = crewId;
+    }
+
+    if (paysSeparately !== undefined) {
+      updateData.paysSeparately = paysSeparately;
+    }
+
+    if (Object.keys(updateData).length === 0) {
       return NextResponse.json(
-        { error: "Data is required" },
+        { error: "No update data provided" },
         { status: 400 }
       );
     }
 
     const submission = await prisma.formSubmission.update({
       where: { id },
-      data: { data },
+      data: updateData,
     });
 
     return NextResponse.json(submission);

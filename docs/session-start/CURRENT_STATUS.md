@@ -1,6 +1,6 @@
 # Current Project Status
 
-> Last updated: Session 008 (Dec 2, 2025)
+> Last updated: Session 009 (Dec 3, 2025)
 
 ## Current Branch: `staging`
 
@@ -169,10 +169,41 @@
   - Glove Size field now has (?) help icon for all clothing types
   - Helmet Size field now has (?) help icon for all clothing types
 
+### Phase 14: Crew Grouping Feature ✅
+- **Database Changes:**
+  - Added new `Crew` model (id, groupId, name, timestamps)
+  - Added `crewId`, `isCrewLeader`, `paysSeparately` fields to FormSubmission
+  - Crews allow grouping submissions within a group (e.g., families within a scout troop)
+- **Member Form Redesign:**
+  - Initial selection screen: "Just Myself" vs "My Crew / Family"
+  - Individual mode: Simple single-person form, no crew association
+  - Crew mode: Crew name field, add multiple crew members
+  - Crew members get simplified "Paying separately?" toggle instead of full payment dropdown
+  - "Change" link to go back to selection screen
+  - Info popup (?) explaining Groups vs Crews concept
+  - Submit button text: "Submit Gear Specs"
+- **Leader Form Updates:**
+  - Added Crew Name field after rental details
+  - Changed "Add Additional Person" to "Add to My Crew"
+  - Section header changed to "My Crew"
+  - Crew members use simplified payment toggle
+- **Admin Submissions Table:**
+  - Visual crew grouping with indented rows (subtle background for crew members)
+  - Crew name badge with mountain icon on crew leader rows
+  - New "Payment" column with short labels (Self, Crew, Group, Other, TBD, w/ Crew)
+  - Crew assignment editing in submission edit dialog
+- **API Updates:**
+  - POST /api/submissions: Creates crew on first submission, assigns subsequent to same crew
+  - PATCH /api/submissions/[id]: Supports crewId and paysSeparately updates
+  - GET /api/groups/[id]: Includes crews with proper ordering
+  - New PATCH/DELETE /api/crews/[id] endpoint for crew management
+- **Payment Option Update:**
+  - Changed "For my family members" to "For my crew"
+
 ## What's Next
 
-1. **Phase 14: Testing** - Unit, integration, E2E
-2. **Phase 15: Production Hardening** - Monitoring, security audit, error tracking
+1. **Phase 15: Testing** - Unit, integration, E2E
+2. **Phase 16: Production Hardening** - Monitoring, security audit, error tracking
 
 ## Quick Commands
 

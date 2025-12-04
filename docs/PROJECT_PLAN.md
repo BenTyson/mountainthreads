@@ -144,3 +144,15 @@
 - Reorganized form field layout to eliminate empty gaps in 2-column grid
 - Added new size guides: Men's Gloves, Women's Gloves/Mittens, Kids Gloves/Mittens, Helmet
 - Added size guide (?) buttons to Glove Size and Helmet Size fields
+
+### Session 009 (Dec 3, 2025)
+- **Crew Grouping Feature:** Implemented full crew/family grouping system
+  - New Crew database model for grouping submissions within a group
+  - Member form redesign with "Just Myself" vs "My Crew / Family" selection
+  - Crew name field with info popup explaining Groups vs Crews
+  - Simplified "Paying separately?" toggle for crew members
+  - Visual crew grouping in admin table (indented rows, crew badges)
+  - New Payment column in submissions table
+  - Crew assignment editing in admin
+- Changed "For my family members" to "For my crew" in payment options
+- Changed submit button to "Submit Gear Specs"

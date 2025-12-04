@@ -28,12 +28,30 @@ export interface GroupWithCount extends Group {
   };
 }
 
+// Crew type - a sub-group within a group (e.g., "Smith Family")
+export interface Crew {
+  id: string;
+  groupId: string;
+  name: string | null;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+
+// Crew with submissions
+export interface CrewWithSubmissions extends Crew {
+  submissions: FormSubmission[];
+}
+
 // Form submission type
 export interface FormSubmission {
   id: string;
   groupId: string;
+  crewId: string | null;
+  crew?: Crew | null;
   email: string | null;
   isLeader: boolean;
+  isCrewLeader: boolean;
+  paysSeparately: boolean;
   data: unknown;
   createdAt: Date | string;
   updatedAt: Date | string;
@@ -42,4 +60,5 @@ export interface FormSubmission {
 // Group with full submissions (used in detail view)
 export interface GroupWithSubmissions extends Group {
   submissions: FormSubmission[];
+  crews?: Crew[];
 }

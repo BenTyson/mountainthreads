@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { Trash2 } from "lucide-react";
 import { SizeGuideButton } from "./size-guide-button";
 import {
@@ -54,6 +55,7 @@ export interface MemberData {
   helmetSize: string;
   sizingNotes: string;
   paymentMethod: string;
+  paysSeparately?: boolean; // For crew members: are they paying separately?
 }
 
 export const emptyMemberData: MemberData = {
@@ -74,6 +76,7 @@ export const emptyMemberData: MemberData = {
   helmetSize: "",
   sizingNotes: "",
   paymentMethod: "",
+  paysSeparately: false,
 };
 
 interface MemberFieldsProps {
@@ -84,6 +87,7 @@ interface MemberFieldsProps {
   title?: string;
   showPayment?: boolean;
   emailRequired?: boolean;
+  isCrewMember?: boolean; // When true, show simplified "paying separately?" toggle instead of full payment dropdown
 }
 
 export function MemberFields({
@@ -94,8 +98,9 @@ export function MemberFields({
   title,
   showPayment = true,
   emailRequired = true,
+  isCrewMember = false,
 }: MemberFieldsProps) {
-  const update = (field: keyof MemberData, value: string) => {
+  const update = (field: keyof MemberData, value: string | boolean) => {
     const newData = { ...data, [field]: value };
     // Reset size fields when clothing type changes
     if (field === "clothingType") {
@@ -534,21 +539,37 @@ export function MemberFields({
 
       {/* Payment */}
       {showPayment && (
-        <div className="space-y-2">
-          <Label>How will you be paying?</Label>
-          <Select value={data.paymentMethod} onValueChange={(v) => update("paymentMethod", v)}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select payment method" />
-            </SelectTrigger>
-            <SelectContent>
-              {PAYMENT_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        isCrewMember ? (
+          <div className="flex items-center justify-between py-2">
+            <div className="space-y-0.5">
+              <Label htmlFor="pays-separately">Paying separately?</Label>
+              <p className="text-sm text-muted-foreground">
+                Toggle on if this person is paying for their own rental
+              </p>
+            </div>
+            <Switch
+              id="pays-separately"
+              checked={data.paysSeparately ?? false}
+              onCheckedChange={(checked) => update("paysSeparately", checked)}
+            />
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <Label>How will you be paying?</Label>
+            <Select value={data.paymentMethod} onValueChange={(v) => update("paymentMethod", v)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select payment method" />
+              </SelectTrigger>
+              <SelectContent>
+                {PAYMENT_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )
       )}
     </div>
   );

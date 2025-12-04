@@ -56,9 +56,32 @@ model Group {
 
   // Relations
   submissions FormSubmission[]
+  crews       Crew[]
 
   @@index([archived])
   @@index([createdAt])
+}
+
+// A crew within a group (e.g., "Smith Family" within a larger group)
+// Crews typically pay together and have gear packed together
+model Crew {
+  id        String   @id @default(cuid())
+
+  // Link to group
+  groupId   String
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  // Optional crew name (e.g., "Smith Family", "Troop 42 - Group A")
+  name      String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  submissions FormSubmission[]
+
+  @@index([groupId])
 }
 
 // Individual form submission from a group member
@@ -69,9 +92,17 @@ model FormSubmission {
   groupId   String
   group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
+  // Link to crew (optional - null for legacy submissions)
+  crewId    String?
+  crew      Crew?    @relation(fields: [crewId], references: [id], onDelete: SetNull)
+
   // Submitter info
   email     String?
   isLeader  Boolean  @default(false)
+
+  // Crew role and payment
+  isCrewLeader   Boolean @default(false)  // First person in their crew
+  paysSeparately Boolean @default(false)  // For crew members: paying separately from crew leader?
 
   // Form data stored as flexible JSON
   // This allows for nested fields, family members, etc.
@@ -82,5 +113,6 @@ model FormSubmission {
   updatedAt DateTime @updatedAt
 
   @@index([groupId])
+  @@index([crewId])
   @@index([createdAt])
 }

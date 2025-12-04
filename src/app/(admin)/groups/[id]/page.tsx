@@ -21,8 +21,15 @@ async function getGroup(id: string) {
   const group = await prisma.group.findUnique({
     where: { id },
     include: {
+      crews: {
+        orderBy: { createdAt: "asc" },
+      },
       submissions: {
-        orderBy: { createdAt: "desc" },
+        orderBy: [
+          { crewId: "asc" },  // Group by crew (null values first)
+          { isCrewLeader: "desc" },  // Crew leaders first within each crew
+          { createdAt: "asc" },  // Then by creation time
+        ],
       },
     },
   });
@@ -73,7 +80,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <SubmissionsTable submissions={group.submissions} />
+            <SubmissionsTable submissions={group.submissions} crews={group.crews} />
           </CardContent>
         </Card>
 

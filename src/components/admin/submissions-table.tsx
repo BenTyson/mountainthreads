@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -40,7 +41,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { Eye, TableIcon, LayoutGrid, Pencil, Trash2 } from "lucide-react";
+import { Eye, TableIcon, LayoutGrid, Pencil, Trash2, Mountain } from "lucide-react";
 import {
   CLOTHING_TYPES,
   SHOE_SIZES,
@@ -59,11 +60,39 @@ import {
   hasHandwearChoice,
   type ClothingType,
 } from "@/lib/form-options";
-import type { FormSubmission } from "@/lib/types";
+import type { FormSubmission, Crew } from "@/lib/types";
 
 type SubmissionsTableProps = {
   submissions: FormSubmission[];
+  crews?: Crew[];
 };
+
+// Helper to group submissions by crew
+function groupSubmissionsByCrew(submissions: FormSubmission[]) {
+  const crewGroups: Map<string | null, FormSubmission[]> = new Map();
+
+  // Initialize with null for ungrouped submissions
+  crewGroups.set(null, []);
+
+  for (const submission of submissions) {
+    const crewId = submission.crewId || null;
+    if (!crewGroups.has(crewId)) {
+      crewGroups.set(crewId, []);
+    }
+    crewGroups.get(crewId)!.push(submission);
+  }
+
+  // Sort within each crew: leader first, then by createdAt
+  for (const [, subs] of crewGroups) {
+    subs.sort((a, b) => {
+      if (a.isCrewLeader && !b.isCrewLeader) return -1;
+      if (!a.isCrewLeader && b.isCrewLeader) return 1;
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    });
+  }
+
+  return crewGroups;
+}
 
 // Human-readable labels for form fields
 const fieldLabels: Record<string, string> = {
@@ -157,7 +186,7 @@ function SubmissionDetail({ submission }: { submission: FormSubmission }) {
     if (key === "paymentMethod") {
       const options: Record<string, string> = {
         individually: "Individually",
-        family: "For my family members",
+        family: "For my crew",
         "entire-group": "Entire Group",
         "someone-else": "Someone Else is Paying for me",
       };
@@ -240,11 +269,15 @@ function SubmissionCard({
   onView,
   onEdit,
   onDelete,
+  isCrewMember = false,
+  crewName,
 }: {
   submission: FormSubmission;
   onView: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  isCrewMember?: boolean;
+  crewName?: string | null;
 }) {
   const data = submission.data as Record<string, unknown>;
   const name = data.firstName
@@ -272,15 +305,22 @@ function SubmissionCard({
   if (data.gloveSize) sizingParts.push(`Gloves: ${data.gloveSize}`);
   if (data.helmetSize) sizingParts.push(`Helmet: ${data.helmetSize}`);
 
+
   return (
-    <Card className="hover:border-primary/50 transition-colors">
+    <Card className={`hover:border-primary/50 transition-colors ${isCrewMember ? "ml-4 bg-muted/30" : ""}`}>
       <CardContent className="p-4">
         <div className="flex justify-between items-start">
           <div className="cursor-pointer flex-1 min-w-0" onClick={onView}>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h4 className="font-medium">{name}</h4>
               {submission.isLeader && (
                 <Badge className="bg-primary text-xs">Leader</Badge>
+              )}
+              {submission.isCrewLeader && crewName && (
+                <Badge variant="outline" className="text-xs gap-1">
+                  <Mountain className="h-3 w-3" />
+                  {crewName}
+                </Badge>
               )}
             </div>
             {clothingType && (
@@ -625,18 +665,48 @@ function EditSubmissionForm({
   );
 }
 
-export function SubmissionsTable({ submissions }: SubmissionsTableProps) {
+export function SubmissionsTable({ submissions, crews = [] }: SubmissionsTableProps) {
   const router = useRouter();
   const [selectedSubmission, setSelectedSubmission] = useState<FormSubmission | null>(null);
   const [editingSubmission, setEditingSubmission] = useState<FormSubmission | null>(null);
   const [deletingSubmission, setDeletingSubmission] = useState<FormSubmission | null>(null);
   const [editData, setEditData] = useState<Record<string, unknown>>({});
+  const [editCrewId, setEditCrewId] = useState<string | null>(null);
+  const [editPaysSeparately, setEditPaysSeparately] = useState(false);
   const [view, setView] = useState<"table" | "cards">("table");
   const [loading, setLoading] = useState(false);
+
+  // Group submissions by crew
+  const crewGroups = groupSubmissionsByCrew(submissions);
+  const crewMap = new Map(crews.map((c) => [c.id, c]));
+
+  // Build ordered list: crews first (by first submission createdAt), then ungrouped
+  const orderedGroups: { crewId: string | null; submissions: FormSubmission[] }[] = [];
+
+  // Add crew groups (sorted by first submission's createdAt)
+  const crewEntries = Array.from(crewGroups.entries())
+    .filter(([id]) => id !== null)
+    .sort((a, b) => {
+      const aFirst = a[1][0];
+      const bFirst = b[1][0];
+      return new Date(aFirst.createdAt).getTime() - new Date(bFirst.createdAt).getTime();
+    });
+
+  for (const [crewId, subs] of crewEntries) {
+    orderedGroups.push({ crewId, submissions: subs });
+  }
+
+  // Add ungrouped submissions at the end
+  const ungrouped = crewGroups.get(null) || [];
+  if (ungrouped.length > 0) {
+    orderedGroups.push({ crewId: null, submissions: ungrouped });
+  }
 
   const handleEdit = (submission: FormSubmission) => {
     setEditingSubmission(submission);
     setEditData(submission.data as Record<string, unknown>);
+    setEditCrewId(submission.crewId || null);
+    setEditPaysSeparately(submission.paysSeparately || false);
   };
 
   const handleSaveEdit = async () => {
@@ -646,7 +716,11 @@ export function SubmissionsTable({ submissions }: SubmissionsTableProps) {
       await fetch(`/api/submissions/${editingSubmission.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: editData }),
+        body: JSON.stringify({
+          data: editData,
+          crewId: editCrewId,
+          paysSeparately: editPaysSeparately,
+        }),
       });
       setEditingSubmission(null);
       router.refresh();
@@ -731,74 +805,114 @@ export function SubmissionsTable({ submissions }: SubmissionsTableProps) {
                   <TableHead>Gloves</TableHead>
                   <TableHead>Helmet</TableHead>
                   <TableHead>Goggles</TableHead>
+                  <TableHead>Payment</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {submissions.map((submission) => {
-                  const data = submission.data as Record<string, unknown>;
-                  const name = data.firstName
-                    ? `${data.firstName} ${data.lastName || ""}`
-                    : "—";
-                  const clothingType = data.clothingType
-                    ? clothingTypes[data.clothingType as string] || String(data.clothingType)
-                    : "—";
-                  const gender = data.youthGender
-                    ? genderTypes[data.youthGender as string] || String(data.youthGender)
-                    : "—";
-                  const goggles = data.goggles
-                    ? gogglesTypes[data.goggles as string] || String(data.goggles)
-                    : "—";
-                  return (
-                    <TableRow key={submission.id}>
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-2">
-                          {name}
-                          {submission.isLeader && (
-                            <Badge className="bg-primary text-xs">Leader</Badge>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>{clothingType}</TableCell>
-                      <TableCell>{gender}</TableCell>
-                      <TableCell>{(data.jacketSize as string) || "—"}</TableCell>
-                      <TableCell>{(data.pantSize as string) || "—"}</TableCell>
-                      <TableCell>{(data.bibSize as string) || "—"}</TableCell>
-                      <TableCell>{(data.shoeSize as string) || "—"}</TableCell>
-                      <TableCell>{(data.gloveSize as string) || "—"}</TableCell>
-                      <TableCell>{(data.helmetSize as string) || "—"}</TableCell>
-                      <TableCell>{goggles}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setSelectedSubmission(submission)}
-                            title="View details"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEdit(submission)}
-                            title="Edit submission"
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setDeletingSubmission(submission)}
-                            title="Delete submission"
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
+                {orderedGroups.map((group) => {
+                  const crew = group.crewId ? crewMap.get(group.crewId) : null;
+                  const crewName = crew?.name;
+
+                  return group.submissions.map((submission, idx) => {
+                    const data = submission.data as Record<string, unknown>;
+                    const name = data.firstName
+                      ? `${data.firstName} ${data.lastName || ""}`
+                      : "—";
+                    const clothingType = data.clothingType
+                      ? clothingTypes[data.clothingType as string] || String(data.clothingType)
+                      : "—";
+                    const gender = data.youthGender
+                      ? genderTypes[data.youthGender as string] || String(data.youthGender)
+                      : "—";
+                    const goggles = data.goggles
+                      ? gogglesTypes[data.goggles as string] || String(data.goggles)
+                      : "—";
+
+                    // Determine if this is a crew member (not leader) in a crew
+                    const isCrewMemberRow = group.crewId && !submission.isCrewLeader;
+
+                    // Payment method - short labels
+                    const getPaymentText = () => {
+                      const method = data.paymentMethod as string;
+                      if (method) {
+                        const shortLabels: Record<string, string> = {
+                          individually: "Self",
+                          family: "Crew",
+                          "entire-group": "Group",
+                          "someone-else": "Other",
+                          "not-sure": "TBD",
+                        };
+                        return shortLabels[method] || method;
+                      }
+                      // For crew members without their own payment method
+                      if (group.crewId && !submission.isCrewLeader) {
+                        return submission.paysSeparately ? "Self" : "w/ Crew";
+                      }
+                      return "—";
+                    };
+
+                    return (
+                      <TableRow
+                        key={submission.id}
+                        className={isCrewMemberRow ? "bg-muted/30" : ""}
+                      >
+                        <TableCell className={`font-medium ${isCrewMemberRow ? "pl-8" : ""}`}>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {name}
+                            {submission.isLeader && (
+                              <Badge className="bg-primary text-xs">Leader</Badge>
+                            )}
+                            {submission.isCrewLeader && crewName && (
+                              <Badge variant="outline" className="text-xs gap-1">
+                                <Mountain className="h-3 w-3" />
+                                {crewName}
+                              </Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>{clothingType}</TableCell>
+                        <TableCell>{gender}</TableCell>
+                        <TableCell>{(data.jacketSize as string) || "—"}</TableCell>
+                        <TableCell>{(data.pantSize as string) || "—"}</TableCell>
+                        <TableCell>{(data.bibSize as string) || "—"}</TableCell>
+                        <TableCell>{(data.shoeSize as string) || "—"}</TableCell>
+                        <TableCell>{(data.gloveSize as string) || "—"}</TableCell>
+                        <TableCell>{(data.helmetSize as string) || "—"}</TableCell>
+                        <TableCell>{goggles}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{getPaymentText()}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSelectedSubmission(submission)}
+                              title="View details"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEdit(submission)}
+                              title="Edit submission"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setDeletingSubmission(submission)}
+                              title="Delete submission"
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  });
                 })}
               </TableBody>
             </Table>
@@ -808,29 +922,43 @@ export function SubmissionsTable({ submissions }: SubmissionsTableProps) {
         {/* Always show cards on mobile, toggleable on desktop */}
         <div className="md:hidden">
           <div className="grid gap-3">
-            {submissions.map((submission) => (
-              <SubmissionCard
-                key={submission.id}
-                submission={submission}
-                onView={() => setSelectedSubmission(submission)}
-                onEdit={() => handleEdit(submission)}
-                onDelete={() => setDeletingSubmission(submission)}
-              />
-            ))}
+            {orderedGroups.map((group) => {
+              const crew = group.crewId ? crewMap.get(group.crewId) : null;
+              const crewName = crew?.name;
+
+              return group.submissions.map((submission, idx) => (
+                <SubmissionCard
+                  key={submission.id}
+                  submission={submission}
+                  onView={() => setSelectedSubmission(submission)}
+                  onEdit={() => handleEdit(submission)}
+                  onDelete={() => setDeletingSubmission(submission)}
+                  isCrewMember={!!group.crewId && !submission.isCrewLeader}
+                  crewName={crewName}
+                />
+              ));
+            })}
           </div>
         </div>
 
         <TabsContent value="cards" className="hidden md:block m-0">
           <div className="grid gap-4 sm:grid-cols-2">
-            {submissions.map((submission) => (
-              <SubmissionCard
-                key={submission.id}
-                submission={submission}
-                onView={() => setSelectedSubmission(submission)}
-                onEdit={() => handleEdit(submission)}
-                onDelete={() => setDeletingSubmission(submission)}
-              />
-            ))}
+            {orderedGroups.map((group) => {
+              const crew = group.crewId ? crewMap.get(group.crewId) : null;
+              const crewName = crew?.name;
+
+              return group.submissions.map((submission, idx) => (
+                <SubmissionCard
+                  key={submission.id}
+                  submission={submission}
+                  onView={() => setSelectedSubmission(submission)}
+                  onEdit={() => handleEdit(submission)}
+                  onDelete={() => setDeletingSubmission(submission)}
+                  isCrewMember={!!group.crewId && !submission.isCrewLeader}
+                  crewName={crewName}
+                />
+              ));
+            })}
           </div>
         </TabsContent>
       </Tabs>
@@ -852,7 +980,49 @@ export function SubmissionsTable({ submissions }: SubmissionsTableProps) {
             <DialogTitle>Edit Submission</DialogTitle>
           </DialogHeader>
           {editingSubmission && (
-            <EditSubmissionForm editData={editData} setEditData={setEditData} />
+            <>
+              <EditSubmissionForm editData={editData} setEditData={setEditData} />
+
+              {/* Crew Assignment Section */}
+              {crews.length > 0 && (
+                <div className="border-t pt-4 mt-4 space-y-4">
+                  <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                    Crew Assignment
+                  </p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Crew</Label>
+                      <Select
+                        value={editCrewId || "none"}
+                        onValueChange={(v) => setEditCrewId(v === "none" ? null : v)}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="No crew" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">No crew</SelectItem>
+                          {crews.map((crew) => (
+                            <SelectItem key={crew.id} value={crew.id}>
+                              {crew.name || `Crew ${crew.id.slice(0, 6)}`}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Payment</Label>
+                      <div className="flex items-center justify-between h-10 px-3 border rounded-md">
+                        <span className="text-sm">Paying separately?</span>
+                        <Switch
+                          checked={editPaysSeparately}
+                          onCheckedChange={setEditPaysSeparately}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditingSubmission(null)}>

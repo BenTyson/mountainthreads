@@ -10,8 +10,18 @@ export async function GET(
     const group = await prisma.group.findUnique({
       where: { id },
       include: {
+        crews: {
+          orderBy: { createdAt: "asc" },
+        },
         submissions: {
-          orderBy: { createdAt: "desc" },
+          include: {
+            crew: true,
+          },
+          orderBy: [
+            { crewId: "asc" },  // Group by crew (null values first)
+            { isCrewLeader: "desc" },  // Crew leaders first within each crew
+            { createdAt: "asc" },  // Then by creation time
+          ],
         },
       },
     });
